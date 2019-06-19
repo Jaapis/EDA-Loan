@@ -1,0 +1,6 @@
+---
+title: "Análise Exploratória de Dados de Empréstimo"
+author: "Rodrigo Toshiaki Horie"
+output: html_notebook
+---
+
