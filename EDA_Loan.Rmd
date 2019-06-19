@@ -4,3 +4,78 @@ author: "Rodrigo Toshiaki Horie"
 output: html_notebook
 ---
 
+# Análise Exploratória de Dados de Empréstimo
+
+## Introdução
+
+Este projeto consiste em realizar uma EDA (Análise Exloratória dos Dados) a partir dos dados fornecidos pela [Prosper](https://www.prosper.com/). Esse conjunto de dados faz parte das [recomendações da Udacity](https://docs.google.com/document/d/1jX3vzkFuFOBGUrlcQ_Lc3jEZVlC_2yyk3tFIbwAI5GQ/edit) para este projeto. 
+
+A Prosper é uma empresa fundada em 2005 com o objetivo de facilitar empréstimos para o mercado dos Estados Unidos. Essa iniciativa já atingiu mais de 15 bilhões de dólares em empréstimos para mais de 920000 pessoas. [Prosper](https://www.prosper.com/about)
+
+O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais sobre o seu conteúdo será abordado futuramente.
+
+## Iniciando a Análise
+
+Primeiro é necessário carregar os dados a partir do csv. Neste projeto chamaremos estes dados de "ld" em referência a loan dataset para facilitar.
+Em seguida será exibida a estrutura desse conjunto de dados obtendo a quantidade de variáveis e de observações.
+
+```{r}
+ld <- read.csv('prosperLoanData.csv')
+str(ld)
+```
+
+Como este conjunto de dados contém 81 variáveis, torna-se evidente que existem muitos dados. Então é importante decidir primeiro quais variáveis serão escolhidas para análise e em seguida realizar a limpeza dos dados.
+
+## Escolha e definição das variáveis e limpeza dos dados
+
+Como eu não possuo conhecimento extenso sobre a área serão escolhidas variáveis que ao meu ver podem ser bastante úteis para a análise. Pode ser que variáveis importantes sejam deixadas de lado, mas a ideia aqui será descobrir a relação dessas variáveis em relação aos empréstimos. Dessa forma será possível retornar e alterar a escolha dessas variáveis caso se mostre necessário. 
+
+Será [necessário consultar a definição das variáveis](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit) para que seja possível fazer a seleção.
+
+- ListingCreationDate: Data da criação da listagem.
+- Term: Duração do empréstimo (em meses).
+- LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue. 
+- ClosedDate: Data aplicável para casos de alteração de Status para Cancelled, Completed, Chargedoff e Defaulted.
+- BorrowerRate: Taxa de juros para quem empresta.
+- LenderYield: Rendimento do credor. (taxa de juros menos a taxa de serviço)
+- EstimatedReturn: Retorno estimado no momento em que foi criado.
+- ProsperScore: Sistema de pontuação usando os dados históricos da Prosper. A pontuação varia de 1-10, sendo 10 a melhor pontuação.
+- ListingCategory: categoria do empréstimo divida nas seguintes categorias
+    - 0 - Not Available
+    - 1 - Debt Consolidation
+    - 2 - Home Improvement
+    - 3 - Business
+    - 4 - Personal Loan
+    - 5 - Student Use
+    - 6 - Auto
+    - 7 - Other
+    - 8 - Baby&Adoption
+    - 9 - Boat
+    - 10 - Cosmetic Procedure
+    - 11 - Engagement Ring
+    - 12 - Green Loans
+    - 13 - Household Expenses
+    - 14 - Large Purchases
+    - 15 - Medical/Dental
+    - 16 - Motorcycle
+    - 17 - RV
+    - 18 - Taxes
+    - 19 - Vacation
+    - 20 - Wedding Loans
+- Occupation: Profissão do mutuário
+- EmploymentStatus: Status do emprego no momento em que a listagem foi criada
+- CreditScoreRangeLower: Menor valor de pontuação de crédito de empréstimo
+- CreditScoreRangeUpper: Maior valor de pontuação de crédito de empréstimo
+- CurrentDelinquencies: Número de contas atrasadas no momento
+- AmountDelinquencies: Quantidade em dólares atrasadas
+- DebttoIncomeRatio: Taxa de débito por renda 
+- StatedMonthlyIncome: Renda mensal declarada
+- MonthlyLoanPayment: Pagamento mensal do empréstimo.
+
+Das 81 variáveis foram selecionadas 18 que serão trabalhadas na análise.
+
+
+
+
+
+
