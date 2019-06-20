@@ -34,7 +34,7 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 
 - ListingCreationDate: Data da criação da listagem.
 - Term: Duração do empréstimo (em meses).
-- LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue. 
+- LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue.
 - ClosedDate: Data aplicável para casos de alteração de Status para Cancelled, Completed, Chargedoff e Defaulted.
 - BorrowerRate: Taxa de juros para quem empresta.
 - LenderYield: Rendimento do credor. (taxa de juros menos a taxa de serviço)
@@ -74,6 +74,49 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 
 Das 81 variáveis foram selecionadas 18 que serão trabalhadas na análise.
 
+```{r}
+# Altera o nome da coluna 17 para facilitar seu uso
+names(ld)[17]<-paste("ListingCategory")
+
+# Cria novo conjunto de dados apenas com as 18 variáveis escolhidas
+ld_clean <- subset(ld, select = c(
+    ListingCreationDate,
+    Term, 
+    LoanStatus,
+    ClosedDate,
+    BorrowerRate, 
+    LenderYield,
+    EstimatedReturn, 
+    ProsperScore,
+    ListingCategory,
+    Occupation, 
+    EmploymentStatus,
+    CreditScoreRangeLower,
+    CreditScoreRangeUpper,
+    CurrentDelinquencies,
+    AmountDelinquent,
+    DebtToIncomeRatio,
+    StatedMonthlyIncome, 
+    MonthlyLoanPayment
+))
+
+# Converte factor para Date
+ld_clean$ListingCreationDate <- as.Date(ld_clean$ListingCreationDate)
+
+str(ld_clean)
+
+
+```
+
+Ao observar a amostra dos dados podemos indicar que há quase 114000 observações, só que muitas delas parecem conter dados incompletos. Por este motivo iremos excluir entradas que possam estar faltando dados e possam compremeter a análise.
+
+```{r}
+# Limpa entradas NA
+ld_clean <- na.exclude(ld_clean)
+str(ld_clean)
+```
+
+Essa limpeza foi capaz de reduzir o conjunto de dados para quase metade das observações. 
 
 
 
