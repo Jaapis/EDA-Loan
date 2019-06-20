@@ -14,6 +14,14 @@ A Prosper é uma empresa fundada em 2005 com o objetivo de facilitar empréstimo
 
 O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais sobre o seu conteúdo será abordado futuramente.
 
+Para esta análise serão necessárias as seguintes bibliotecas:
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
 ## Iniciando a Análise
 
 Primeiro é necessário carregar os dados a partir do csv. Neste projeto chamaremos estes dados de "ld" em referência a loan dataset para facilitar.
@@ -117,6 +125,55 @@ str(ld_clean)
 ```
 
 Essa limpeza foi capaz de reduzir o conjunto de dados para quase metade das observações. 
+
+## Análise Univariada 
+
+### ListingCreationDate
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+qplot(ListingCreationDate, data = ld_clean, xlab = "Data", ylab = "Empréstimos", main = "Quantidade de empréstimos por data") 
+    
+```
+
+Pode se observar que a quantidade de empréstimos foi aumentando ao longo do tempo, mas algo impactou esse crescimento no final de 2012 e começo de 2013. 
+
+### Term
+
+```{r Term, echo=FALSE, message=FALSE, warning=FALSE}
+summary(ld_clean$Term)
+qplot(Term, data = ld_clean, xlab = "Tempo em Meses", ylab = "Quantidade", main = "Histograma de quantidade de tempo de empréstimo")
+```
+
+Pela análise estatística e do gráfico pode-se observar que a maior parte dos empréstimos possuem duração de 36 meses, seguido por 60 meses e uma pequena parcela de 12 meses.
+
+### LoanStatus
+
+```{r LoanStatus}
+
+summary(ld_clean$LoanStatus)
+
+ggplot(ld_clean, aes(LoanStatus)) +
+    geom_bar()+
+    coord_flip()
+```
+
+Pode-se observar que a maior parte dos empréstimos se enquadram em "Current" e "Completed". Dessa forma, os dados dos outros status ficam reduzidos e difíceis de serem observados. Portanto, a seguir esses dois status serão excluídos para que melhore a observação da proporção dos outros status.
+
+```{r}
+ggplot(filter(ld_clean, LoanStatus != "Current" &
+                LoanStatus != "Completed"),
+                aes(LoanStatus)) +
+                geom_bar() +
+                scale_y_continuous(breaks = seq(0, 10000, 1000)) +
+                coord_flip()
+```
+
+
+
+
+
+
 
 
 
