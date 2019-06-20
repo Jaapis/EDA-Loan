@@ -43,7 +43,6 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 - ListingCreationDate: Data da criação da listagem.
 - Term: Duração do empréstimo (em meses).
 - LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue.
-- ClosedDate: Data aplicável para casos de alteração de Status para Cancelled, Completed, Chargedoff e Defaulted.
 - BorrowerRate: Taxa de juros para quem empresta.
 - LenderYield: Rendimento do credor. (taxa de juros menos a taxa de serviço)
 - EstimatedReturn: Retorno estimado no momento em que foi criado.
@@ -80,7 +79,7 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 - StatedMonthlyIncome: Renda mensal declarada
 - MonthlyLoanPayment: Pagamento mensal do empréstimo.
 
-Das 81 variáveis foram selecionadas 18 que serão trabalhadas na análise.
+Das 81 variáveis foram selecionadas 17 que serão trabalhadas na análise.
 
 ```{r}
 # Altera o nome da coluna 17 para facilitar seu uso
@@ -91,7 +90,6 @@ ld_clean <- subset(ld, select = c(
     ListingCreationDate,
     Term, 
     LoanStatus,
-    ClosedDate,
     BorrowerRate, 
     LenderYield,
     EstimatedReturn, 
@@ -170,6 +168,48 @@ ggplot(filter(ld_clean, LoanStatus != "Current" &
                 coord_flip() +
                 labs(x = "Quantidade", y = "Status de Empréstimo", title = "Quantidade de empréstimos por Status")
 ```
+
+
+### BorrowerRate
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+qplot(BorrowerRate, data = ld_clean, xlab = "Taxa de Juros", ylab = "Quantidade de mutuários", main = "Taxa de Juros por Mutuário")
+
+```
+
+Pode-se observar existem alguns valores categóricos. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
