@@ -168,7 +168,7 @@ ggplot(filter(ld_clean, LoanStatus != "Current" &
                 coord_flip() +
                 labs(x = "Quantidade", y = "Status de Empréstimo", title = "Quantidade de empréstimos por Status")
 ```
-
+Filtrando as cariáveis "Current" e "Completed" pode-se observar que o Status "Chargedoff" também possui uma grande quantidade de empréstimos.
 
 ### BorrowerRate
 
@@ -241,22 +241,84 @@ ggplot(filter(ld_clean, ListingCategory != "1"), aes(ListingCategory)) +
                 labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
 ```
 
-Agora já é possível observar que o segundo motivo para o empréstimo na Prosper é encaixado na categoria "Outros" o que é razoável já que essa é uma categoria genérica que engloba diversas outras categorias não catalogadas. Em seguida é "Melhoria Domicialiar", "Negócios" e "Automóveis".
+Agora já é possível observar que o segundo motivo para o empréstimo na Prosper é encaixado na categoria "Outros" o que é razoável já que essa é uma categoria genérica que engloba diversas outras categorias não catalogadas. Em seguida é "Melhoria Domiciliar", "Negócios" e "Automóveis".
+
+### Occupation
+
+```{r , fig.width=14, fig.height=12 }
+
+ggplot(ld_clean, aes(x = reorder(Occupation, Occupation,  function(x)+length(x)))) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "Quantidade", y = "Profissão", title = "Quantidade de Profissões") 
+
+```
+
+Dentre os resultados obtidos será feita uma filtragem com as profissões com "Others" , "Professional" e "" por serem ambíguas.
+
+```{r , fig.width=14, fig.height=12 }
+
+ggplot(filter(ld_clean, Occupation != "Other" & Occupation != "Professional" & Occupation != ""), aes(x = reorder(Occupation, Occupation,  function(x)+length(x)))) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "Quantidade", y = "Profissão", title = "Quantidade de Profissões") 
+
+``` 
+
+### EmploymentStatus
+
+```{r}
+summary(ld_clean$EmploymentStatus)
+
+ggplot(ld_clean, aes(EmploymentStatus)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(x = "Status de Profissão", y = "Quantidade", title = "Quantidade de Status de Profissões") 
+
+```
+
+Pode-se verificar que a maior parte dos empréstimos foram feitos com pessoas que estavam atualmente empregadas no memomento do empréstimo. 
+
+### CreditScoreRangeLower e CreditScoreRangeUpper
+
+```{r}
+summary(ld_clean$CreditScoreRangeLower)
+
+ggplot(ld_clean, aes(CreditScoreRangeLower)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(x = "Variação de Pontuação de Crédito mais Baixa", y = "Quantidade", title = "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Baixa") 
+
+```
 
 
 
+```{r}
+summary(ld_clean$CreditScoreRangeUpper)
+
+ggplot(ld_clean, aes(CreditScoreRangeUpper)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(x = "Variação de Pontuação de Crédito mais Alta", y = "Quantidade", title = "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Alta") 
+```
+
+Observando os gráficos pode-se observar que a distribuição é muito semelhante porém com um breve deslocamento a direita em relação a Variação mais alta. O que faz sentido por que os dois gráficos tratam de uma mesma variável porém com extremos diferentes. Pode-se evidenciar também que a maior concentração de pontuação mais baixa fica em torno do valor de 700 e o mais alto em torno de 719.
+
+### CurrentDelinquencies
+
+```{r}
+
+```
 
 
+### AmountDelinquencies
+
+```{r}
 
 
-
-
-
-
-
-
-
-
+```
 
 
 

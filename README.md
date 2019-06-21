@@ -57,3 +57,7 @@ Esta etapa não será necessária para este projeto, já que estaremos utilizand
 [qplot: Quick plot with ggplot2 - R software and data visualization](http://www.sthda.com/english/wiki/qplot-quick-plot-with-ggplot2-r-software-and-data-visualization)
 
 [coord_flip](https://www.rdocumentation.org/packages/ggplot2/versions/3.1.1/topics/coord_flip)
+
+[Order Bars in ggplot2 bar graph](https://stackoverflow.com/questions/5208679/order-bars-in-ggplot2-bar-graph)
+
+[Plot size and resolution with R markdown, knitr, pandoc, beamer](https://stackoverflow.com/questions/17963962/plot-size-and-resolution-with-r-markdown-knitr-pandoc-beamer)
