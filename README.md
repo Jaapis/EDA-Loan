@@ -55,4 +55,5 @@ Esta etapa não será necessária para este projeto, já que estaremos utilizand
 Área destinada a documentar possíveis referências necessárias utilizadas no projeto.
 
 [qplot: Quick plot with ggplot2 - R software and data visualization](http://www.sthda.com/english/wiki/qplot-quick-plot-with-ggplot2-r-software-and-data-visualization)
+
 [coord_flip](https://www.rdocumentation.org/packages/ggplot2/versions/3.1.1/topics/coord_flip)
