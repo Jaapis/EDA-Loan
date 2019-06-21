@@ -16,9 +16,11 @@ O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais
 
 Para esta análise serão necessárias as seguintes bibliotecas:
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
+
 ```
 
 
@@ -44,7 +46,6 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 - Term: Duração do empréstimo (em meses).
 - LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue.
 - BorrowerRate: Taxa de juros para quem empresta.
-- LenderYield: Rendimento do credor. (taxa de juros menos a taxa de serviço)
 - EstimatedReturn: Retorno estimado no momento em que foi criado.
 - ProsperScore: Sistema de pontuação usando os dados históricos da Prosper. A pontuação varia de 1-10, sendo 10 a melhor pontuação.
 - ListingCategory: categoria do empréstimo divida nas seguintes categorias
@@ -79,7 +80,7 @@ Será [necessário consultar a definição das variáveis](https://docs.google.c
 - StatedMonthlyIncome: Renda mensal declarada
 - MonthlyLoanPayment: Pagamento mensal do empréstimo.
 
-Das 81 variáveis foram selecionadas 17 que serão trabalhadas na análise.
+Das 81 variáveis foram selecionadas 16 que serão trabalhadas na análise.
 
 ```{r}
 # Altera o nome da coluna 17 para facilitar seu uso
@@ -91,7 +92,6 @@ ld_clean <- subset(ld, select = c(
     Term, 
     LoanStatus,
     BorrowerRate, 
-    LenderYield,
     EstimatedReturn, 
     ProsperScore,
     ListingCategory,
@@ -173,15 +173,75 @@ ggplot(filter(ld_clean, LoanStatus != "Current" &
 ### BorrowerRate
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(ld_clean$BorrowerRate)
 qplot(BorrowerRate, data = ld_clean, xlab = "Taxa de Juros", ylab = "Quantidade de mutuários", main = "Taxa de Juros por Mutuário")
+```
+
+Pode-se observar existem alguns valores mais presentes que se destacam. Porém a distribuição mais popular se encontra entre 10 e 20%.
+
+### EstimatedReturn
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(ld_clean$EstimatedReturn)
+qplot(EstimatedReturn , data = ld_clean, xlab = "Retorno estimado", ylab = "Quantidade de empréstimos", main = "Retorno estimado por quantidade de empréstimos")
 
 ```
 
-Pode-se observar existem alguns valores categóricos. 
+Esse gráfico consegue reprentar com certa fidelidade uma relação de distribuição normal com relação aos dados de retorno estimado apra cada empréstimo realizado. Com a maior concentração de seus valores em cerca de 0,9%. Curioso destacar que há retornos estimados com valores negativos.
 
+### ProsperScore
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+qplot(ProsperScore , data = ld_clean, xlab = "Retorno estimado", ylab = "Quantidade de empréstimos", main = "Retorno estimado por quantidade de empréstimos")
 
+```
 
+Essa relação também parece representar uma distribuição normal. Como se trata de uma avaliação própria da empresa será mais intieressante a exploração futura com relação a outras variáveis para determinar seu impacto.
+
+### ListingCategory
+
+Esta categoria é tratada de forma diferente, porém vale lembrar que apesar de estarmos lidando com uma lista enumerada segue a seguir cada um de suas respectivas categorias:
+  
+0 - Not Available  
+1 - Debt Consolidation  
+2 - Home Improvement  
+3 - Business  
+4 - Personal Loan  
+5 - Student Use  
+6 - Auto  
+7 - Other  
+8 - Baby and Adoption  
+9 - Boat  
+10 - Cosmetic Procedure  
+11 - Engagement Ring  
+12 - Green Loans  
+13 - Household Expenses  
+14 - Large Purchases  
+15 - Medical/Dental  
+16 - Motorcycle  
+17 - RV  
+18 - Taxes  
+19 - Vacation  
+20 - Wedding Loans  
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(ld_clean, aes(ListingCategory)) +
+                geom_bar() +
+                scale_x_continuous() +
+                labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
+
+```
+
+Consolidação de Crédito é o principal motivo para que as pessoas busquem empréstimos na Prosper. Dessa forma a relação das outras categorias fica nebulosa. Por isso será criado um novo gráfico ignorando a Consolidação de Crédito para que seja possível comparar a relação com as outras categorias.
+
+```{r}
+ggplot(filter(ld_clean, ListingCategory != "1"), aes(ListingCategory)) +
+                geom_bar() +
+                scale_x_continuous() +
+                labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
+```
+
+Agora já é possível observar que o segundo motivo para o empréstimo na Prosper é encaixado na categoria "Outros" o que é razoável já que essa é uma categoria genérica que engloba diversas outras categorias não catalogadas. Em seguida é "Melhoria Domicialiar", "Negócios" e "Automóveis".
 
 
 
