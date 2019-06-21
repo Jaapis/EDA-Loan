@@ -20,7 +20,7 @@ Para esta análise serão necessárias as seguintes bibliotecas:
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
-
+library(grid)
 ```
 
 
@@ -308,7 +308,23 @@ Observando os gráficos pode-se observar que a distribuição é muito semelhant
 
 ### CurrentDelinquencies
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+ggplot(ld_clean, aes(CurrentDelinquencies)) +
+  geom_histogram()+
+  scale_x_continuous(limits = c(0,18), breaks = seq(0,18,2)) +
+  scale_y_continuous(limits = c(0,11000), breaks = seq(0,11000,1000)) +
+  labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
+```
+Pode-se observar que a maior concentração de pessoas com muitas dívidas se encontra com poucas contas atrasadas. Com processo de filtragem pode-se observar melhor a variação com mais contas.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+
+ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
+  geom_histogram()+
+  scale_x_continuous(limits = c(2,18), breaks = seq(0,18,2)) +
+  scale_y_continuous(limits = c(0,1200), breaks = seq(0,1200,200)) +
+  labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
+
 
 ```
 
