@@ -331,17 +331,35 @@ ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
 
 ### AmountDelinquencies
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+summary(ld_clean$AmountDelinquent)
+qplot(AmountDelinquent, data = ld_clean)
 
 
 ```
+Fazendo uma breve análise pode-se analisar que a maior parte dos clientes se concentra em clientes não atrasados.
+
+```{r}
+
+count_no_delinquent <- nrow(filter(ld_clean, AmountDelinquent == 0))
+count_delinquent <- nrow(filter(ld_clean, AmountDelinquent > 0))
+
+print(count_delinquent/(count_delinquent+count_no_delinquent))
+```
+
+Tem-se cerca de 13.1% dos clientes atrasados.
 
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 
+summary(log10(ld_clean$AmountDelinquent + 1))
 
+qplot(log10(AmountDelinquent), data = ld_clean) +
+  ggtitle("Log10(AmountDelinquent)")
 
+```
 
-
+Fazendo uma filtragem dos dados com log10 apresenta-se os seguintes dados.
 
 
 
