@@ -267,6 +267,8 @@ ggplot(filter(ld_clean, Occupation != "Other" & Occupation != "Professional" & O
 
 ``` 
 
+Em ordem decrescente, a maior quantidade de profissionais que pegam empréstimos da Prosper são Executivos, Programadores e Professores, respectivamente.
+
 ### EmploymentStatus
 
 ```{r}
@@ -311,7 +313,7 @@ Observando os gráficos pode-se observar que a distribuição é muito semelhant
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 ggplot(ld_clean, aes(CurrentDelinquencies)) +
   geom_histogram()+
-  scale_x_continuous(limits = c(0,18), breaks = seq(0,18,2)) +
+  scale_x_continuous(limits = c(0,18), breaks = seq(0,18,1)) +
   scale_y_continuous(limits = c(0,11000), breaks = seq(0,11000,1000)) +
   labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
 ```
@@ -321,21 +323,22 @@ Pode-se observar que a maior concentração de pessoas com muitas dívidas se en
 
 ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
   geom_histogram()+
-  scale_x_continuous(limits = c(2,18), breaks = seq(0,18,2)) +
+  scale_x_continuous(limits = c(2,18), breaks = seq(0,18,1)) +
   scale_y_continuous(limits = c(0,1200), breaks = seq(0,1200,200)) +
   labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
 
 
 ```
-
+A filtragem ajuda a mostrar que a maior quantidade de pessoas possui menos contas. São poucas pessoas que estão atrasadas e possuem diversas contas.
 
 ### AmountDelinquencies
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 summary(ld_clean$AmountDelinquent)
-qplot(AmountDelinquent, data = ld_clean)
 
-
+ggplot(ld_clean, aes(AmountDelinquent)) +
+  geom_histogram() +
+  labs(x = "Quantidade atrasada em dólar", y = "Quantidade de pessoas", title = "Quantidade de pessoas atrasadas por quantia atrasada em dólar")
 ```
 Fazendo uma breve análise pode-se analisar que a maior parte dos clientes se concentra em clientes não atrasados.
 
@@ -352,23 +355,73 @@ Tem-se cerca de 13.1% dos clientes atrasados.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 
-summary(log10(ld_clean$AmountDelinquent + 1))
+ggplot(filter(ld_clean, AmountDelinquent > 10000), aes(AmountDelinquent)) +
+  geom_histogram() +
+  labs(x = "Quantidade atrasada em dólar", y = "Quantidade de pessoas", title = "Quantidade de pessoas atrasadas por quantia atrasada em dólar")
+```
 
-qplot(log10(AmountDelinquent), data = ld_clean) +
-  ggtitle("Log10(AmountDelinquent)")
+Fazendo uma filtragem com apenas atrasados em mais de 10000 dólares é possível ver que tratam-se de poucas pessoas. Portanto a grande concentração de pessoas se destina a dívidas menores que 10000 dólares.
+
+### DebtToIncomeRatio
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+summary(ld_clean$DebtToIncomeRatio)
+
+ggplot(data = ld_clean, aes(DebtToIncomeRatio)) +
+  geom_histogram()
 
 ```
 
-Fazendo uma filtragem dos dados com log10 apresenta-se os seguintes dados.
+A maior parte dos clientes possui uma proporção de dívida e renda de 0.22%. Salvo alguma exceções. No gráfico torna-se difícil de enxergar essa relação. Portanto, será utilizada uma tranformação logarítmica para facilitar a visualização deste outros casos. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=6}
+summary(ld_clean$DebtToIncomeRatio)
+
+graf_1 <- ggplot(data = ld_clean, aes(DebtToIncomeRatio)) +
+  geom_histogram() +
+  labs(x = "Proporção de Dívida e Renda", y = "Quantidade de pessoas", title = "Proporção de Dívida e Renda por Pessoa") +
+  scale_x_continuous(limits = c(0,10.1), breaks = seq(0,10.1,0.5)) 
+
+graf_2 <- ggplot(data = ld_clean, aes(log10(DebtToIncomeRatio)+1)) +
+  geom_histogram() +
+  labs(x = "Proporção de Dívida e Renda (log10)", y = "Quantidade de pessoas", title = "Proporção de Dívida em log10 e Renda por Pessoa")
+  
+grid.arrange(graf_1, graf_2, ncol = 2 )
+
+  
+```
+
+A situação de análise se restringe a valores próximos de 0.22%, mas não é um fator limitante. Existindo casos em que essa razão pode ser extrapolada.
+
+### Stated Monthly Income
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+summary(ld_clean$StatedMonthlyIncome)
+
+ggplot(data = ld_clean, aes(StatedMonthlyIncome)) +
+  geom_histogram() +
+  labs(x = "Renda Mensal Declarada", y = "Quantidade de pessoas", title = "Quantidade de pessoas por Renda Mensal Declarada") +
+  scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
+
+```
+
+Utilizando um corte máximo de 20000 mil dólares com renda mensal declarada gera-se o gráfico acima. COm os dados fornecidos pode-se afirmar que a maior concentração de renda está em torno de 5000 mil dóalres mensais.
+
+### MonthlyLoanPayment
 
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 
+summary(ld_clean$MonthlyLoanPayment)
 
+ggplot(data = ld_clean, aes(MonthlyLoanPayment)) +
+  geom_histogram() +
+  labs(x = "Parcela da Dívida Mensal", y = "Quantidade de pessoas", title = "Quantidade de pessoas por Parcela da Dívida Mensal") +
+  scale_x_continuous(limits = c(0,1500), breaks = seq(0,1500,100))
 
+```
 
-
-
-
+A maior parte das dívidas mensais, no entanto, giram em torno de 160 e 300 dólares mensais. Que são valores aceitáveis quanto a possibilidade de pagamento.
 
 
 
