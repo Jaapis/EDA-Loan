@@ -423,9 +423,9 @@ ggplot(data = ld_clean, aes(MonthlyLoanPayment)) +
 
 A maior parte das dívidas mensais, no entanto, giram em torno de 160 e 300 dólares mensais. Que são valores aceitáveis quanto a possibilidade de pagamento.
 
-# Análise Bavariada
+## Análise Bavariada
 
-## Encontrando Correlações
+### Encontrando Correlações
 
 Para analisar as correlações para a análise bivariada serão feitos alguns testes antes de decidir quais relações serão aprofundadas a seguir.
 
