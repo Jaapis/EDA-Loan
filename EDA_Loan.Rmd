@@ -138,7 +138,7 @@ Pode se observar que a quantidade de empréstimos foi aumentando ao longo do tem
 
 ### Term
 
-```{r Term, echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 summary(ld_clean$Term)
 qplot(Term, data = ld_clean, xlab = "Tempo em Meses", ylab = "Quantidade", main = "Quantidade de tempo de empréstimo")
 ```
@@ -147,7 +147,7 @@ Pela análise estatística e do gráfico pode-se observar que a maior parte dos 
 
 ### LoanStatus
 
-```{r LoanStatus}
+```{r}
 
 summary(ld_clean$LoanStatus)
 
@@ -393,7 +393,7 @@ grid.arrange(graf_1, graf_2, ncol = 2 )
 
 A situação de análise se restringe a valores próximos de 0.22%, mas não é um fator limitante. Existindo casos em que essa razão pode ser extrapolada.
 
-### Stated Monthly Income
+### StatedMonthlyIncome
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 summary(ld_clean$StatedMonthlyIncome)
@@ -423,10 +423,24 @@ ggplot(data = ld_clean, aes(MonthlyLoanPayment)) +
 
 A maior parte das dívidas mensais, no entanto, giram em torno de 160 e 300 dólares mensais. Que são valores aceitáveis quanto a possibilidade de pagamento.
 
+# Análise Bavariada
 
+## Encontrando Correlações
 
+Para analisar as correlações para a análise bivariada serão feitos alguns testes antes de decidir quais relações serão aprofundadas a seguir.
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cor.test(ld_clean$BorrowerRate, ld_clean$EstimatedReturn)
+cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeLower)
+cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeUpper)
 
+```
+
+Correlações:
+
+- BorrowerRate e Estimated Return: 0.8267322
+- ProsperScore e CreditScoreRangeLower: 0.3870006
+- ProsperScore e CreditScoreRangeUpper: 0.3870006
 
 
 
