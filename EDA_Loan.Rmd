@@ -542,10 +542,24 @@ ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = Pr
 Nesta análise pode-se chegar a conclusão que valores de taxa de retorno negativas impactam na ProsperScore significativamente. Não significa que quanto maior a taxa de retorno maior a pontuação da ProsperScore, como pode-se evidenciar pela nuvem mesclada de dados entre taxas superiores a 0 e inferiores a 0.2. Porém, para taxas acima de 0.2 a ProsperScore sempre apresenta boas pontuações. 
 Agora sobre a Renda Mensal Declarada não parece ter tantra influência na ProsperScore. 
 
+### ListingCategory, DebtToIncomeRatio, ProsperScore
+
+```{r  echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = ld_clean, aes(x = ListingCategory, DebtToIncomeRatio, color = ProsperScore)) +
+  geom_point(alpha = 0.5, size = 1, position = 'jitter')+
+  labs(x = "Categorias", y = "Razão de Dívida e Renda Mensal", title = "Categorias por Razão de Dívida e Renda Mensal Por ProsperScore")  +
+  scale_x_continuous(limits = c(0,20), breaks = seq(0,20,1)) 
 
 
+```
 
+Esta análise não consegue atingir nenhuma conclusão por apresentar uma distribuição bastante bagunçada da ProsperScore.
 
+# TODO
+
+## Gráficos Finais e Resumo
+
+## Reflexão
 
 
 
