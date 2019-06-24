@@ -560,6 +560,8 @@ Esta análise não consegue atingir nenhuma conclusão por apresentar uma distri
 
 ## Gráficos Finais e Resumo
 
+### 
+
 ### Relação da Razão da Dívida por Renda Mensal por Taxa de Empréstimo para a Prosper Score
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -581,20 +583,22 @@ A princípio é possível enxergar que há uma maior concentração de pontuaç�
 
 A conclusão é que maior será a Pontuação da Prosper quanto menor for a a razão da dívida por renda mensal do mutuário e quanto menor a taxa de empréstimo.
 
-### StatedMonthlyIncome, EstimatedReturn, ProsperScore
+### Renda Mensal Declarada,  Estimativa de Retorno, ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=18, fig.height=16}
 
 ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = ProsperScore)) +
   geom_point(alpha = 0.5, size = 1, position = 'jitter') +
-  geom_smooth() +
   labs(x = "Renda Mensal Declarada", y = "Estimativa de Retorno", title = "Rendal Mensal Declarada por Estimativa de Retorno por ProsperScore")  +
   scale_color_gradient(low = "blue", high = "red") +
   scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
 
 ```
 
-A análise de Renda Mensal Declarada e Estimativa de Retorno, 
+A análise de Renda Mensal Declarada e Estimativa de Retorno, apresetaram resultados bastante interessantes para a análise do Score da Prosper. Inicialmente podemos afirmar que não há influência da relação das duas variáveis em relação à pontuação da Prosper. Porém, olhando cuidadosamente, é possível enxergar que existem valores limitantes para a estimativa de retorno que criam faixas que podem criar separações entre 3 áreas distintitas. A primeira faixa delimita uma taxa de retorno acima ao valor de 0.18 que predominantemente possui apenas mutuários com pontuações mais altas na ProsperScore. A faixa inferior de -0.02 para baixo apresenta predominantemente mutuários com baixas pontuações na ProsperScore. Enquanto a camada central se encontra uma faixa com valores distintos e bastante misturados entre si. Sem poder afirmar uma relação com a renda mensal declarada. Muito provavelmente por ser muito mais provável de se determinar uma relação bruta da pontuação da Prosper quando comapra ao gráfico da análise anterior, já que estaria lidando com a variável em função da Razão entre a Dívida e a Renda mensal do mutuário.
+Portanto, maior renda não significa nada para a Pontução da Prosper, mas sim a relação dessa renda com a dívida em si.
+
+
 
 
 
