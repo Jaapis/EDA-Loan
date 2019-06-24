@@ -465,10 +465,32 @@ Há dois grandes padrões observados com estes dados. O primeiro deles é que as
 
 ggplot(data = ld_clean, aes(ListingCategory, Occupation)) +
   geom_point(alpha = 0.1, size = 1, position = 'jitter')+
-  labs(x = "Categoria de Empréstimo", y = "Profissão", title = "Cateogira de Emrpéstimo por Profissão") +
+  labs(x = "Categoria de Empréstimo", y = "Profissão", title = "Categoria de Empréstimo por Profissão")  +
   scale_x_continuous(limits = c(0,20), breaks = seq(0,20,1))
 ```
 O que mais se destaca por esta análise é que o fator mais relevante para empréstimo é a categoria delas, que seguem o mesmo padrão para as mais diversas profissões em maior ou menos intensidade. Vale destacar que as profissões "Professional" e "Others" por serem mais genéricas e possuirem diversos dados com esta definiçãpo, apresenta uma forte marcação. Outra observação é a de que Estudantes de uma forma geral não possuem muitos empréstimos. Muito provavelmente por motivos financeiros, já que ao estudar torna-se menos propenso a dividir o tempo de dedicação com algum a atividade remunerada que garanta o cobrimento das parelas de um empréstimo. Por outro lado, Juízes, Investidores também são menos propensos a terem empréstimos. Por sua vez, acredito que pela natureza de se tratar de empregos que recebem alta remuneração há a menor busca de empréstimos.
 
+### Term e DebtToIncomeRatio
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+ggplot(ld_clean, aes(DebtToIncomeRatio, Term)) +
+  geom_point() +
+  labs(x = "Taxa de Dívida por Renda", y = "Tempo de Empréstimo", title = "Taxa de Dívida por Renda por Tempo de Emrpéstimo") +
+  scale_y_continuous(limits = c(0,60), breaks = seq(0,60,6))
+```
+
+Nos 3 cenários observam-se características. A primeira é que a maior parte dos mutuários com tempo de empréstimo de 12 meses também possuem uma taxa menor de Dívida por Renda, o que significa que há uma relação de capacidade financeiro de prover o pagamento da dívida. A segunda é a variação gradual de Taxa de Dívida por Renda. Sendo este o caso mais com maior ocorrências e por último, o terceiro cenário em que há 60 meses de tempo de empréstimo, mas que aprensenta também uma taxa de Dívida por Renda maior. 
+
+### Occupation e DebtToIncomeRatio
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+
+ggplot(data = ld_clean, aes(StatedMonthlyIncome, ProsperScore)) +
+  geom_point(alpha = 0.05, size = 1, position = 'jitter')+
+  labs(x = "Renda Mensal Declarada", y = "Pontuação da Prosper", title = "Renda Mensal Declara pela Pontuação da Prosper") +
+  scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
+```
+
+Pode-se observar que há uma leve inclinação para que uma quantidade maior de Renda Mensal Declarada ajude a ter uma pontuação maior na Prosper, mas ainda devem ser feitos análises mais extensivas para que possam se afirmar quaisquer conclusões sobre o real impacto desta variável.
 
 
