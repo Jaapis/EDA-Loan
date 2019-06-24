@@ -254,7 +254,7 @@ ggplot(ld_clean, aes(x = reorder(Occupation, Occupation,  function(x)+length(x))
   geom_bar() +
   coord_flip() +
   theme_minimal() +
-  labs(x = "Quantidade", y = "Profissão", title = "Quantidade de Profissões") 
+  labs(x = "Profissão", y = "Quantidade", title = "Quantidade de Profissões") 
 
 ```
 
@@ -516,6 +516,21 @@ ggplot(data = ld_clean, aes(CreditScoreRangeUpper, ProsperScore)) +
 ```
 
 De forma análoga, a mesma relação pode ser observada quando se tratam das variáveis ProsperScore e CreditScoreRangeUpper.
+
+### Profissões e Pontuação Prosper
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=36}
+ggplot(ld_clean, aes(x = reorder(Occupation, ProsperScore,  function(x)+length(x)), y = ProsperScore)) +
+  geom_boxplot() +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(limits = c(1,10), breaks = seq(0,10,1)) +
+  labs(x = "Profissão", y = "ProsperScore", title = "ProsperScore por Profissão") 
+```
+
+Uma breve análise consegue destacar algumas carreiras que conseguem obter pontuações maiores na Prosper dentre elas destacam-se Programador, Engenheiro Eletricista, Advogado, Doutor, Farmacêutico, Arquiteto, Investidor e Juíz. Em geral tratam-se de profissões bem remuneradas, o que pode ser um fator determinante para esta análise.
+
 
 ## Análise Multivariada
 
