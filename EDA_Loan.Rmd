@@ -555,9 +555,9 @@ ggplot(data = ld_clean, aes(x = ListingCategory, DebtToIncomeRatio, color = Pros
 
 Esta análise não consegue atingir nenhuma conclusão por apresentar uma distribuição bastante bagunçada da ProsperScore.
 
-# TODO
-
 ## Gráficos Finais e Resumo
+
+
 
 ## Reflexão
 
