@@ -16,7 +16,7 @@ O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais
 
 Para esta análise serão necessárias as seguintes bibliotecas:
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r  message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
@@ -84,7 +84,7 @@ Das 81 variáveis foram selecionadas 16 que serão trabalhadas na análise.
 
 ```{r}
 # Altera o nome da coluna 17 para facilitar seu uso
-names(ld)[16]<-paste("ListingCategory")
+names(ld)[17]<-paste("ListingCategory")
 
 # Cria novo conjunto de dados apenas com as 18 variáveis escolhidas
 ld_clean <- subset(ld, select = c(
