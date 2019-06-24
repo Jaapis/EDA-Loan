@@ -316,7 +316,7 @@ Observando os gráficos pode-se observar que a distribuição é muito semelhant
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 ggplot(ld_clean, aes(CurrentDelinquencies)) +
   geom_histogram()+
-  scale_x_continuous(limits = c(0,18), breaks = seq(0,18,1)) +
+  scale_x_continuous(limits = c(0,19), breaks = seq(1,18,1)) +
   scale_y_continuous(limits = c(0,11000), breaks = seq(0,11000,1000)) +
   labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
 ```
@@ -326,7 +326,7 @@ Pode-se observar que a maior concentração de pessoas com muitas dívidas se en
 
 ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
   geom_histogram()+
-  scale_x_continuous(limits = c(2,18), breaks = seq(0,18,1)) +
+  scale_x_continuous(limits = c(2,18), breaks = seq(3,18,1)) +
   scale_y_continuous(limits = c(0,1200), breaks = seq(0,1200,200)) +
   labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
 
@@ -559,6 +559,42 @@ ggplot(data = ld_clean, aes(x = ListingCategory, DebtToIncomeRatio, color = Pros
 Esta análise não consegue atingir nenhuma conclusão por apresentar uma distribuição bastante bagunçada da ProsperScore.
 
 ## Gráficos Finais e Resumo
+
+### Relação da Razão da Dívida por Renda Mensal por Taxa de Empréstimo para a Prosper Score
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(ld_clean, aes(x = DebtToIncomeRatio, y = BorrowerRate, color = ProsperScore))+
+  geom_point(alpha = 0.2) +
+  geom_smooth(color = "#FF6666") +
+  scale_y_continuous(limits = c(0.04,0.36), breaks = seq(0.04,0.36,0.02)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.20)) +
+  labs(x = "Razão de Dívida por Renda Mensal", 
+       y = "Taxa de Empréstimo", 
+       title = "Relação da Razão da Dívida por Renda Mensal por Taxa de Empréstimo para a Prosper Score") +
+  theme_light()
+  
+```
+
+Este gráfico envolve a relação entre a Razão da Dívida por Renda Mensal, que ao longo de toda esta análise foi considerada uma variável bastante importante para determinar a possibilidade de cada mutuário ser capaz de quitar seu empréstimo, com a Taxa de Empréstimo, que é a taxa determinada para quem está emprestando este dinheiro ao mutuário. Essa relação consegue criar um gradiente com a pontuação da Prosper para cada mutuário. 
+
+A princípio é possível enxergar que há uma maior concentração de pontuação mais alta ao reduzir a Taxa de Empréstimo. Porém, não se torna distinto tão facilmente se a Razão de Dívida por Renda Mensal também influencia tanto a Pontuação da Prosper. Por isso, torna-se necessário o uso da reta para enxergar a tendência desses dados. 
+
+A conclusão é que maior será a Pontuação da Prosper quanto menor for a a razão da dívida por renda mensal do mutuário e quanto menor a taxa de empréstimo.
+
+### StatedMonthlyIncome, EstimatedReturn, ProsperScore
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=18, fig.height=16}
+
+ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = ProsperScore)) +
+  geom_point(alpha = 0.5, size = 1, position = 'jitter') +
+  geom_smooth() +
+  labs(x = "Renda Mensal Declarada", y = "Estimativa de Retorno", title = "Rendal Mensal Declarada por Estimativa de Retorno por ProsperScore")  +
+  scale_color_gradient(low = "blue", high = "red") +
+  scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
+
+```
+
+A análise de Renda Mensal Declarada e Estimativa de Retorno, 
 
 
 
