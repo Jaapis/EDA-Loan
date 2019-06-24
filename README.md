@@ -34,9 +34,9 @@ b. Gráficos na sua análise não precisam ser rebuscados com rótulos, unidades
 
 c. Você pode iterar sobre um gráfico no mesmo código R, mas você não precisa mostrar todas as iterações na sua análise.
 
-2. Seção no final chamada "Gráficos dinais e sumário"
+2. Seção no final chamada "Gráficos finais e sumário"
 
-Escolher três gráficos da análise apra polir e compartilhar na seção. Estes gráficos deverão conter demonstração de diferentes tendências e devem ser detalhados com rótulos, unidades e títulos apropriados. 
+Escolher três gráficos da análise para polir e compartilhar na seção. Estes gráficos deverão conter demonstração de diferentes tendências e devem ser detalhados com rótulos, unidades e títulos apropriados. 
 
 3. Seção final chamada "Reflexão"
 
@@ -63,3 +63,4 @@ Esta etapa não será necessária para este projeto, já que estaremos utilizand
 [Plot size and resolution with R markdown, knitr, pandoc, beamer](https://stackoverflow.com/questions/17963962/plot-size-and-resolution-with-r-markdown-knitr-pandoc-beamer)
 
 [ggplot gradient color](https://www.datanovia.com/en/blog/ggplot-gradient-color/)
+
