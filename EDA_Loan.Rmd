@@ -192,7 +192,10 @@ Esse gráfico consegue reprentar com certa fidelidade uma relação de distribui
 ### ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-qplot(ProsperScore , data = ld_clean, xlab = "Retorno estimado", ylab = "Quantidade de empréstimos", main = "Retorno estimado por quantidade de empréstimos")
+ggplot(ld_clean, aes(x = ProsperScore)) +
+  geom_histogram() +
+  labs(x = "Retorno Estimado", y = "Quantidade de empréstimos", titlte = "Retorno estimado por quantidade de empréstimos") +
+  scale_x_continuous(limits = c(1,11), breaks = seq(0,10,1))
 
 ```
 
@@ -227,17 +230,17 @@ Esta categoria é tratada de forma diferente, porém vale lembrar que apesar de 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(ld_clean, aes(ListingCategory)) +
                 geom_bar() +
-                scale_x_continuous() +
+                scale_x_continuous(limits = c(0,21), breaks = seq(0,20,1))+
                 labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
 
 ```
 
 Consolidação de Crédito é o principal motivo para que as pessoas busquem empréstimos na Prosper. Dessa forma a relação das outras categorias fica nebulosa. Por isso será criado um novo gráfico ignorando a Consolidação de Crédito para que seja possível comparar a relação com as outras categorias.
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(filter(ld_clean, ListingCategory != "1"), aes(ListingCategory)) +
                 geom_bar() +
-                scale_x_continuous() +
+                scale_x_continuous(limits = c(0,21), breaks = seq(0,20,1))+
                 labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
 ```
 
