@@ -84,7 +84,7 @@ Das 81 variáveis foram selecionadas 16 que serão trabalhadas na análise.
 
 ```{r}
 # Altera o nome da coluna 17 para facilitar seu uso
-names(ld)[17]<-paste("ListingCategory")
+names(ld)[16]<-paste("ListingCategory")
 
 # Cria novo conjunto de dados apenas com as 18 variáveis escolhidas
 ld_clean <- subset(ld, select = c(
@@ -482,7 +482,7 @@ ggplot(ld_clean, aes(DebtToIncomeRatio, Term)) +
 
 Nos 3 cenários observam-se características. A primeira é que a maior parte dos mutuários com tempo de empréstimo de 12 meses também possuem uma taxa menor de Dívida por Renda, o que significa que há uma relação de capacidade financeiro de prover o pagamento da dívida. A segunda é a variação gradual de Taxa de Dívida por Renda. Sendo este o caso mais com maior ocorrências e por último, o terceiro cenário em que há 60 meses de tempo de empréstimo, mas que aprensenta também uma taxa de Dívida por Renda maior. 
 
-### Occupation e DebtToIncomeRatio
+### StatedMonthlyIncome e ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
 
@@ -613,13 +613,25 @@ ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = Pr
 A análise de Renda Mensal Declarada e Estimativa de Retorno, apresetaram resultados bastante interessantes para a análise do Score da Prosper. Inicialmente podemos afirmar que não há influência da relação das duas variáveis em relação à pontuação da Prosper. Porém, olhando cuidadosamente, é possível enxergar que existem valores limitantes para a estimativa de retorno que criam faixas que podem criar separações entre 3 áreas distintitas. A primeira faixa delimita uma taxa de retorno acima ao valor de 0.18 que predominantemente possui apenas mutuários com pontuações mais altas na ProsperScore. A faixa inferior de -0.02 para baixo apresenta predominantemente mutuários com baixas pontuações na ProsperScore. Enquanto a camada central se encontra uma faixa com valores distintos e bastante misturados entre si. Sem poder afirmar uma relação com a renda mensal declarada. Muito provavelmente por ser muito mais provável de se determinar uma relação bruta da pontuação da Prosper quando comapra ao gráfico da análise anterior, já que estaria lidando com a variável em função da Razão entre a Dívida e a Renda mensal do mutuário.
 Portanto, maior renda não significa nada para a Pontução da Prosper, mas sim a relação dessa renda com a dívida em si.
 
+### DebtToIncomeRatio, Occupation, ProsperScore
 
-
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12}
+ggplot(data = ld_clean, aes(x = DebtToIncomeRatio, y = reorder(Occupation, desc(Occupation)), color = ProsperScore)) +
+  geom_point(alpha = 0.25, size = 1, position = 'jitter') +
+  labs(x = "Razão entre Dívida e Renda Mensal", y = "Profissão", title = "Razão entre Dívida e Renda Mensal por Profissão por PorsperScore") +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  scale_color_gradientn(colours = rainbow(5))
+```
+A análise de Profissões por Renda Mensal Declarada vai possuir uma certa distribuição que acompanhará cada Profissão. Aglomerando essas informações com a pontuação da Prosper pode-se observar que maiores pontuações da Prosper estão distribuídas entre todas as profissões porém, algumas concentram uma quantidade maior. Era de se esperar que a Razão da Dívida e Renda Mensal fossem fatores fortes para essa pontuação, porém, pode-se enxergar que em algumas profissões existem mutuários com essa razão próxima de 0.2 que também aprensentam pontuações altas na Prosper. 
 
 
 ## Reflexão
 
+Este projeto foi bastante interessante e tangencialmente incentiva o estudante a compreender os dados que estão sendo trabalhados. Por este mesmo motivo, a primeira dificuldade encontrada foi entender cada variável de maneira correta, já que eu não possuo background em como empréstimos funcionam, isso aliado aos termos todos em inglês agregou muito conhecimento buscando entender como tudo funcionava. Uma grande ajuda foi a [planilha explicativa ](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit#gid=0) descrevendo cada variável e suas peculiaridades.
 
+Em seguida foi um grande exercício lidar com este número de variáveis com tantos tipos diferentes e buscar compreender a melhor forma de lidar com as variáveis escolhidas. 
+
+Agora que o processo de análise chegou ao fim sobra um pouco de curiosidade de outras conclusões que poderiam ser obtidas lidando com mais variáveis. Das 81 variáveis presentes no conjunto de dados foram utilizadas apenas 16 delas. Dessa forma sobram muitas possibilidades de análises que poderiam ser feitas.
 
 
 
