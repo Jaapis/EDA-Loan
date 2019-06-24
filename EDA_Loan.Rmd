@@ -331,7 +331,6 @@ ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
 ```
 A filtragem ajuda a mostrar que a maior quantidade de pessoas possui menos contas. São poucas pessoas que estão atrasadas e possuem diversas contas.
 
-### AmountDelinquencies
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 summary(ld_clean$AmountDelinquent)
@@ -516,13 +515,28 @@ ggplot(data = ld_clean, aes(CreditScoreRangeUpper, ProsperScore)) +
 
 De forma análoga, a mesma relação pode ser observada quando se tratam das variáveis ProsperScore e CreditScoreRangeUpper.
 
+## Análise Multivariada
+
+### Estimated Return, BorrowerRate e ProsperScore
+```{r}
+ggplot(ld_clean, aes(x = EstimatedReturn ,  y = BorrowerRate, color = ProsperScore)) +
+  geom_point() +
+  labs(x = "Estimativa de Retorno", y = "Taxa de Empréstimo", title = "Taxa de Empréstimo por Estimativa de Retorno por Prosper Score", color = "Prosper Score") 
+  
+```
+
+Comparando agora a análise bivariada de Borrower Rate e Estimated Return com o ProsperScore é possível enxergar uma gradação bastante interessante para as relações de Borrower Rate e Estimated Return. Pode-se concluir que um dos fatores mais relevantes para a diferenciação é a nota da ProsperScore que concentra maiores pontuações quanto maior a Estimativa de Retorno, o que também viabiliza uma Taxa de Empréstimo Menor.
 
 
+### LoanStatus, Occupation e ProsperScore
 
 
-
-
-
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+ggplot(ld_clean, aes(x = EmploymentStatus ,  y = MonthlyLoanPayment, color = ProsperScore)) +
+  geom_point() +
+  coord_flip()
+  #labs(x = "Estimativa de Retorno", y = "Taxa de Empréstimo", title = "Taxa de Empréstimo por Estimativa de Retorno por Prosper Score", color = "Prosper Score") 
+```
 
 
 
