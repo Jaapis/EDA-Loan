@@ -68,7 +68,8 @@ importantes sejam deixadas de lado, mas a ideia aqui será descobrir a relação
 dessas variáveis em relação aos empréstimos. Dessa forma será possível retornar 
 e alterar a escolha dessas variáveis caso se mostre necessário. 
 
-Será [necessário consultar a definição das variáveis](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit) para que seja possível fazer a seleção.
+Será [necessário consultar a definição das variáveis](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit) para que 
+seja possível fazer a seleção.
 
 - ListingCreationDate: Data da criação da listagem.
 - Term: Duração do empréstimo (em meses).
@@ -116,7 +117,7 @@ Das 81 variáveis foram selecionadas 16 que serão trabalhadas na análise.
 # Altera o nome da coluna 17 para facilitar seu uso
 names(ld)[17]<-paste("ListingCategory")
 
-# Cria novo conjunto de dados apenas com as 18 variáveis escolhidas
+# Cria novo conjunto de dados apenas com as 16 variáveis escolhidas
 ld_clean <- subset(ld, select = c(
     ListingCreationDate,
     Term, 
@@ -155,7 +156,7 @@ ld_clean <- na.exclude(ld_clean)
 ```
 
 Essa limpeza foi capaz de reduzir o conjunto de dados para quase metade das 
-observações. 
+observações, atingindo a marca de 77557 observações.
 
 ```{r}
 ##### Funções criadas para evitar código repetido
@@ -247,8 +248,9 @@ summary(ld_clean$Term)
 
 # Cria histograma com qplot
 
-histograma(ld_clean$ListingCreationDate, 
-           ld_clean, "Tempo (Meses)", 
+histograma(ld_clean$Term, 
+           ld_clean, 
+           "Tempo (Meses)", 
            "Quantidade", 
            "Quantidade de tempo de empréstimo")
 
@@ -256,7 +258,8 @@ histograma(ld_clean$ListingCreationDate,
 
 Pela análise estatística e do gráfico pode-se observar que a maior parte dos 
 empréstimos possuem duração de 36 meses, seguido por 60 meses e uma pequena 
-parcela de 12 meses.
+parcela de 12 meses. Os empréstimos de 36 meses representam 68.3% de todos os 
+empréstimos.
 
 ### LoanStatus
 
@@ -281,12 +284,13 @@ excluídos para que melhore a observação da proporção dos outros status.
 
 ```{r}
 # Cria gráfico de barras com o ggplot
-gg_inv(ld_clean$LoanStatus, 
-       ld_clean, 
-       "Quantidade", 
-       "Status de Empréstimo", 
-       "Quantidade de empréstimos por Status") + 
-  geom_bar()
+ggplot(filter(ld_clean, LoanStatus != "Current" &
+                LoanStatus != "Completed"),
+                aes(LoanStatus)) +
+                geom_bar() +
+                scale_y_continuous(breaks = seq(0, 10000, 1000)) +
+                coord_flip() +
+                labs(x = "Quantidade", y = "Status de Empréstimo", title = "Quantidade de empréstimos por Status")
 ```
 
 Filtrando as variáveis "Current" e "Completed" pode-se observar que o Status 
@@ -325,14 +329,15 @@ histograma(ld_clean$EstimatedReturn,
 ```
 
 Esse gráfico consegue reprentar com certa fidelidade uma relação de distribuição 
-normal com relação aos dados de retorno estimado apra cada empréstimo realizado. 
-Com a maior concentração de seus valores em cerca de 0,9%. Curioso destacar que 
+normal com relação aos dados de retorno estimado para cada empréstimo realizado. 
+Com a maior concentração de seus valores em cerca de 9%. Curioso destacar que 
 há retornos estimados com valores negativos.
 
 ### ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-
+# Mostra sumário de ProsperScore
+summary(ld_clean$ProsperScore)
 # Cria gráfico de ProsperScore com ggplot()
 gg(ld_clean$ProsperScore, 
    ld_clean, 
@@ -344,7 +349,7 @@ gg(ld_clean$ProsperScore,
 ```
 
 Essa relação também parece representar uma distribuição normal. Como se trata 
-de uma avaliação própria da empresa será mais intieressante a exploração futura 
+de uma avaliação própria da empresa será mais interessante a exploração futura 
 com relação a outras variáveis para determinar seu impacto.
 
 ### ListingCategory
@@ -711,7 +716,7 @@ Há dois grandes padrões observados com estes dados. O primeiro deles é que as
 Taxas de Empréstimo e O Retorno estimado seguem camadas lineares e paralelas de 
 forma bastante sutil. Enquanto ao mesmo tempo há uma concentração bastante 
 grande de valores acumulados e com certa divergência de valores de Retorno 
-Estimado entre 0.3 e 0.11 .
+Estimado entre 0.03 e 0.11 .
 
 
 ### ListingCategory e Occupation
@@ -1122,13 +1127,70 @@ Em seguida foi um grande exercício lidar com este número de variáveis com
 tantos tipos diferentes e buscar compreender a melhor forma de lidar com as 
 variáveis escolhidas. 
 
+### Resumo
+
+- A análise do conjunto de dados selecionado inclui 77557 observações e contou 
+com 16 variáveis. 
+
+### Descobertas
+
+- Desde a coleta desses dados em 2009, a Prosper foi gradativmente aumentando 
+sua quantidade de empréstimo havendo uma queda entre o fim de 2012 e começo de 
+2013, mas apresentando um grande crescimento a partir desse período. 
+
+- A maior parte dos empréstimos tem duração de 36 meses, representando sozinho 
+68.3% de todos os empréstimos.
+
+- O retorno estimado tem sua maior concentração em valores próximos a 9%. 
+A variação de retorno estimado chega a alcançar valores negativos, implicando
+prejuízo.
+
+- Cerca de 85% dos mutuários estavam empregados no momento do empréstimo,
+quase 10% estava em um emprego de período integral e apenas 1 das 77557 
+observações estava desempregado.
+
+- Apesar de apresentar valores distintos, a tendência dos dados da Pontuação de
+Crédito e a Pontuação da Score apresentam uma distribuição bastante similar.
+
+- A Razão de Dívida por Renda é obtida dividindo a parcela mensal do dívida do 
+empréstimo pela renda mensal declarada. Dessa forma obtemos um valor que indica 
+quanto essa parcea representa dos gastos mensais. Metade dos mutuários varia 
+esse valor entre 15% e 32% da renda mensal, mas existem casos que chegam a 
+superar o valor de sua renda mensal.
+
+- A distribuição dos dados para Renda Mensal Declarada é bastante variada. Com 
+base na análise desse conjunto de dados temos uma mediana de 5000 dólares. 
+
+- Por outro lado a mediana das parcelas mensais se encontra em 254.6 dólares. 
+
+- A taxa de retorno estimado e o retorno estimado possuem uma forte correção. 
+
+- Entre todas as categorias de empréstimo a Consolidação de Débito é a razão
+principal para os empréstimos, independente da Renda Mensal Declarada ou da
+Profissão do mutuário.
+
+- A Razão de Dívida por Renda é importante para determinar casos particulares.
+Principalmente em relação àqueles de tempo de empréstimo de 12 meses, há uma 
+concentração para aqueles que possuem essa razão baixa. Para razões mais altas,
+o tempo de empréstimo tende a se encaixar em 36 meses ou 60 meses.
+
+- Existem algumas profissões como Programador, Engenheiro Eletricista, Advogado,
+Médico, Farmacêutico, Arquiteto, Investidor e Juíz que tentem a ter pontuações
+pela Prosper maiores que a média.
+
+## Trabalhos futuros
+
 Agora que o processo de análise chegou ao fim sobra um pouco de curiosidade de 
 outras conclusões que poderiam ser obtidas lidando com mais variáveis. Das 81 
 variáveis presentes no conjunto de dados foram utilizadas apenas 16 delas. Dessa 
 forma sobram muitas possibilidades de análises que poderiam ser feitas.
 
-#TODO
-## O projeto inclui uma seção de referência que discute a análise realizada.
-## A seção fornece pelo menos uma ideia ou pergunta para trabalhos futuros.
+Dentre as formas que pdoeriam ser abordadas para enriquecer este trabalho seguem 
+algumas sugestões:
 
+- Agregar novas variáveis que não foram exploradas no conjunto de dados
+- Comparar este conjunto de dados com o de outra empresa para entender se esses
+padrões são particulares da Prosper ou se podem ser considerados gerais
+- Analisar períodos específicos, ao invés dos dados todos, podem trazer alguma
+ideia geral sobre mudanças na visão de negócio da Prosper 
 
