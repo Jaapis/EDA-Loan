@@ -1,53 +1,83 @@
 ---
 title: "Análise Exploratória de Dados de Empréstimo"
 author: "Rodrigo Toshiaki Horie"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
-
-# Análise Exploratória de Dados de Empréstimo
-
+    
 ## Introdução
 
-Este projeto consiste em realizar uma EDA (Análise Exloratória dos Dados) a partir dos dados fornecidos pela [Prosper](https://www.prosper.com/). Esse conjunto de dados faz parte das [recomendações da Udacity](https://docs.google.com/document/d/1jX3vzkFuFOBGUrlcQ_Lc3jEZVlC_2yyk3tFIbwAI5GQ/edit) para este projeto. 
+Este projeto consiste em realizar uma EDA (Análise Exloratória dos Dados) a 
+partir dos dados fornecidos pela [Prosper](https://www.prosper.com/). 
+Esse conjunto de dados faz parte das [recomendações da Udacity](https://docs.google.com/document/d/1jX3vzkFuFOBGUrlcQ_Lc3jEZVlC_2yyk3tFIbwAI5GQ/edit) 
+para este projeto. 
 
-A Prosper é uma empresa fundada em 2005 com o objetivo de facilitar empréstimos para o mercado dos Estados Unidos. Essa iniciativa já atingiu mais de 15 bilhões de dólares em empréstimos para mais de 920000 pessoas. [Prosper](https://www.prosper.com/about)
+A Prosper é uma empresa fundada em 2005 com o objetivo de facilitar empréstimos 
+para o mercado dos Estados Unidos. Essa iniciativa já atingiu mais de 15 bilhões
+de dólares em empréstimos para mais de 920000 pessoas. [Prosper](https://www.prosper.com/about)
 
-O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais sobre o seu conteúdo será abordado futuramente.
+O conjunto de dados analisado neste projeto é fornecido por esta empresa e mais 
+sobre o seu conteúdo será abordado futuramente.
 
 Para esta análise serão necessárias as seguintes bibliotecas:
 
-```{r  message=FALSE, warning=FALSE}
+- ggplot2
+
+- dplyr
+
+- gridExtra
+
+- grid
+
+- knitr
+
+```{r  echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
 library(grid)
+library(knitr)
 ```
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
 
 ## Iniciando a Análise
 
-Primeiro é necessário carregar os dados a partir do csv. Neste projeto chamaremos estes dados de "ld" em referência a loan dataset para facilitar.
-Em seguida será exibida a estrutura desse conjunto de dados obtendo a quantidade de variáveis e de observações.
+Primeiro é necessário carregar os dados a partir do csv. Neste projeto 
+chamaremos estes dados de "ld" em referência a loan dataset para facilitar.
+Em seguida será exibida a estrutura desse conjunto de dados obtendo a quantidade 
+de variáveis e de observações.
 
 ```{r}
+# Carrega o conjunto de dados e atribui à variável ld
 ld <- read.csv('prosperLoanData.csv')
-str(ld)
 ```
 
-Como este conjunto de dados contém 81 variáveis, torna-se evidente que existem muitos dados. Então é importante decidir primeiro quais variáveis serão escolhidas para análise e em seguida realizar a limpeza dos dados.
+Como este conjunto de dados contém 81 variáveis, torna-se evidente que existem 
+muitos dados. Então é importante decidir primeiro quais variáveis serão 
+escolhidas para análise e em seguida realizar a limpeza dos dados.
 
 ## Escolha e definição das variáveis e limpeza dos dados
 
-Como eu não possuo conhecimento extenso sobre a área serão escolhidas variáveis que ao meu ver podem ser bastante úteis para a análise. Pode ser que variáveis importantes sejam deixadas de lado, mas a ideia aqui será descobrir a relação dessas variáveis em relação aos empréstimos. Dessa forma será possível retornar e alterar a escolha dessas variáveis caso se mostre necessário. 
+Como eu não possuo conhecimento extenso sobre a área serão escolhidas variáveis
+que ao meu ver podem ser bastante úteis para a análise. Pode ser que variáveis 
+importantes sejam deixadas de lado, mas a ideia aqui será descobrir a relação 
+dessas variáveis em relação aos empréstimos. Dessa forma será possível retornar 
+e alterar a escolha dessas variáveis caso se mostre necessário. 
 
 Será [necessário consultar a definição das variáveis](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit) para que seja possível fazer a seleção.
 
 - ListingCreationDate: Data da criação da listagem.
 - Term: Duração do empréstimo (em meses).
-- LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue.
+- LoanStatus: Status que pode variar em: Cancelled,  Chargedoff, Completed, 
+Current, Defaulted, FinalPaymentInProgress, PastDue.
 - BorrowerRate: Taxa de juros para quem empresta.
 - EstimatedReturn: Retorno estimado no momento em que foi criado.
-- ProsperScore: Sistema de pontuação usando os dados históricos da Prosper. A pontuação varia de 1-10, sendo 10 a melhor pontuação.
+- ProsperScore: Sistema de pontuação usando os dados históricos da Prosper. 
+A pontuação varia de 1-10, sendo 10 a melhor pontuação.
 - ListingCategory: categoria do empréstimo divida nas seguintes categorias
     - 0 - Not Available
     - 1 - Debt Consolidation
@@ -109,101 +139,219 @@ ld_clean <- subset(ld, select = c(
 # Converte factor para Date
 ld_clean$ListingCreationDate <- as.Date(ld_clean$ListingCreationDate)
 
-str(ld_clean)
+#str(ld_clean)
 
 
 ```
 
-Ao observar a amostra dos dados podemos indicar que há quase 114000 observações, só que muitas delas parecem conter dados incompletos. Por este motivo iremos excluir entradas que possam estar faltando dados e possam compremeter a análise.
+Ao observar a amostra dos dados podemos indicar que há quase 114000 observações,
+só que muitas delas parecem conter dados incompletos. Por este motivo iremos 
+excluir entradas que possam estar faltando dados e possam compremeter a análise.
 
 ```{r}
 # Limpa entradas NA
 ld_clean <- na.exclude(ld_clean)
-str(ld_clean)
+#str(ld_clean)
 ```
 
-Essa limpeza foi capaz de reduzir o conjunto de dados para quase metade das observações. 
+Essa limpeza foi capaz de reduzir o conjunto de dados para quase metade das 
+observações. 
+
+```{r}
+##### Funções criadas para evitar código repetido
+
+# Função para criação de histogramas com qplot
+# Parêmtros: 
+#           variavel: variavel desejada
+#           df: dataframe de origem
+#           titulo_x: titulo da vriável x
+#           titulo_y: titulo da vriável y
+#           titulo: titulo do gráfico
+
+histograma <- function(variavel, df, titulo_x, titulo_y, titulo){
+  qplot(variavel, data = df, xlab = titulo_x, ylab = titulo_y, main = titulo) 
+}
+
+# Função para criação de gráficos genéricos com ggplot
+# Parêmtros: 
+#           variavel: variavel desejada
+#           df: dataframe de origem
+#           titulo_x: titulo da vriável x
+#           titulo_y: titulo da vriável y
+#           titulo: titulo do gráfico
+
+gg_inv <- function(variavel, df, titulo_x, titulo_y, titulo){
+  ggplot(ld_clean, aes(variavel)) +
+  coord_flip() + 
+  labs(x = titulo_x, 
+       y = titulo_y, 
+       title = titulo)
+}
+
+
+# Função para criação de gráficos com coordenadas invertidas com ggplot
+# Parêmtros: 
+#           variavel: variavel desejada
+#           df: dataframe de origem
+#           titulo_x: titulo da vriável x
+#           titulo_y: titulo da vriável y
+#           titulo: titulo do gráfico
+
+gg <- function(variavel, df, titulo_x, titulo_y, titulo){
+  ggplot(ld_clean, aes(variavel)) +
+  labs(x = titulo_x, 
+       y = titulo_y, 
+       title = titulo)
+}
+
+# Função para criação de gráficos com duas variáveis com ggplot
+# Parêmtros: 
+#           variavel1: variavel x
+#           variavel2: variavel y
+#           df: dataframe de origem
+#           titulo_x: titulo da vriável x
+#           titulo_y: titulo da vriável y
+#           titulo: titulo do gráfico
+
+gg_bi <- function(variavel1, variavel2, df, titulo_x, titulo_y, titulo){
+  ggplot(ld_clean, aes(variavel1, variavel2)) +
+  labs(x = titulo_x, 
+       y = titulo_y, 
+       title = titulo)
+}
+
+```
 
 ## Análise Univariada 
 
 ### ListingCreationDate
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Cria histograma de data por empréstimos
+histograma(ld_clean$ListingCreationDate, ld_clean, 
+           "Data", 
+           "Empréstimos", 
+           "Quantidade de empréstimos por data") + 
+  geom_bar()
 
-qplot(ListingCreationDate, data = ld_clean, xlab = "Data", ylab = "Empréstimos", main = "Quantidade de empréstimos por data") 
-    
 ```
 
-Pode se observar que a quantidade de empréstimos foi aumentando ao longo do tempo, mas algo impactou esse crescimento no final de 2012 e começo de 2013. 
+Pode se observar que a quantidade de empréstimos foi aumentando ao longo do 
+tempo, mas algo impactou esse crescimento no final de 2012 e começo de 2013. 
 
 ### Term
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Mostra sumário de Term
 summary(ld_clean$Term)
-qplot(Term, data = ld_clean, xlab = "Tempo em Meses", ylab = "Quantidade", main = "Quantidade de tempo de empréstimo")
+
+# Cria histograma com qplot
+
+histograma(ld_clean$ListingCreationDate, 
+           ld_clean, "Tempo (Meses)", 
+           "Quantidade", 
+           "Quantidade de tempo de empréstimo")
+
 ```
 
-Pela análise estatística e do gráfico pode-se observar que a maior parte dos empréstimos possuem duração de 36 meses, seguido por 60 meses e uma pequena parcela de 12 meses.
+Pela análise estatística e do gráfico pode-se observar que a maior parte dos 
+empréstimos possuem duração de 36 meses, seguido por 60 meses e uma pequena 
+parcela de 12 meses.
 
 ### LoanStatus
 
 ```{r}
-
+# Mostra sumário de LoanStatus
 summary(ld_clean$LoanStatus)
 
-ggplot(ld_clean, aes(LoanStatus)) +
-    geom_bar()+
-    coord_flip() + 
-    labs(x = "Quantidade", y = "Status de Empréstimo", title = "Quantidade de empréstimos por Status ")
+# Cria gráfico de barras com ggplot
+gg_inv(ld_clean$LoanStatus, 
+       ld_clean, 
+       "Status de Empréstimo", 
+       "Quantidade",
+       "Quantidade de empréstimos por Status") + 
+  geom_bar()
+
 ```
 
-Pode-se observar que a maior parte dos empréstimos se enquadram em "Current" e "Completed". Dessa forma, os dados dos outros status ficam reduzidos e difíceis de serem observados. Portanto, a seguir esses dois status serão excluídos para que melhore a observação da proporção dos outros status.
+Pode-se observar que a maior parte dos empréstimos se enquadram em "Current" 
+e "Completed". Dessa forma, os dados dos outros status ficam reduzidos e 
+difíceis de serem observados. Portanto, a seguir esses dois status serão 
+excluídos para que melhore a observação da proporção dos outros status.
 
 ```{r}
-ggplot(filter(ld_clean, LoanStatus != "Current" &
-                LoanStatus != "Completed"),
-                aes(LoanStatus)) +
-                geom_bar() +
-                scale_y_continuous(breaks = seq(0, 10000, 1000)) +
-                coord_flip() +
-                labs(x = "Quantidade", y = "Status de Empréstimo", title = "Quantidade de empréstimos por Status")
+# Cria gráfico de barras com o ggplot
+gg_inv(ld_clean$LoanStatus, 
+       ld_clean, 
+       "Quantidade", 
+       "Status de Empréstimo", 
+       "Quantidade de empréstimos por Status") + 
+  geom_bar()
 ```
-Filtrando as cariáveis "Current" e "Completed" pode-se observar que o Status "Chargedoff" também possui uma grande quantidade de empréstimos.
+
+Filtrando as variáveis "Current" e "Completed" pode-se observar que o Status 
+"Chargedoff" também possui uma grande quantidade de empréstimos.
 
 ### BorrowerRate
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Mostra sumário da variável BorrowerRate
 summary(ld_clean$BorrowerRate)
-qplot(BorrowerRate, data = ld_clean, xlab = "Taxa de Juros", ylab = "Quantidade de mutuários", main = "Taxa de Juros por Mutuário")
+
+# Cria Histograma com qplot() de BorrowerRate
+histograma(ld_clean$BorrowerRate, 
+           ld_clean, 
+           "Taxa de Juros", 
+           "Quantidade de mutuários", 
+           "Taxa de Juros por Mutuário")
+
 ```
 
-Pode-se observar existem alguns valores mais presentes que se destacam. Porém a distribuição mais popular se encontra entre 10 e 20%.
+Pode-se observar existem alguns valores mais presentes que se destacam. 
+Porém a distribuição mais popular se encontra entre 10 e 20%.
 
 ### EstimatedReturn
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Mostra Sumário de EstimatedReturn
 summary(ld_clean$EstimatedReturn)
-qplot(EstimatedReturn , data = ld_clean, xlab = "Retorno estimado", ylab = "Quantidade de empréstimos", main = "Retorno estimado por quantidade de empréstimos")
 
+# Cria gráfico de EstimatedReturn com qplot()
+histograma(ld_clean$EstimatedReturn, 
+           ld_clean, 
+           "Retorno estimado", 
+           "Quantidade de empréstimos", 
+           "Retorno estimado por quantidade de empréstimos")
 ```
 
-Esse gráfico consegue reprentar com certa fidelidade uma relação de distribuição normal com relação aos dados de retorno estimado apra cada empréstimo realizado. Com a maior concentração de seus valores em cerca de 0,9%. Curioso destacar que há retornos estimados com valores negativos.
+Esse gráfico consegue reprentar com certa fidelidade uma relação de distribuição 
+normal com relação aos dados de retorno estimado apra cada empréstimo realizado. 
+Com a maior concentração de seus valores em cerca de 0,9%. Curioso destacar que 
+há retornos estimados com valores negativos.
 
 ### ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(ld_clean, aes(x = ProsperScore)) +
-  geom_histogram() +
-  labs(x = "Retorno Estimado", y = "Quantidade de empréstimos", titlte = "Retorno estimado por quantidade de empréstimos") +
-  scale_x_continuous(limits = c(1,11), breaks = seq(0,10,1))
 
+# Cria gráfico de ProsperScore com ggplot()
+gg(ld_clean$ProsperScore, 
+   ld_clean, 
+   "Retorno Estimado", 
+   "Quantidade de empréstimos", 
+   "Retorno estimado por quantidade de empréstimos") + 
+  geom_histogram() +  
+  scale_x_continuous(limits = c(1,11), breaks = seq(0,10,1))
 ```
 
-Essa relação também parece representar uma distribuição normal. Como se trata de uma avaliação própria da empresa será mais intieressante a exploração futura com relação a outras variáveis para determinar seu impacto.
+Essa relação também parece representar uma distribuição normal. Como se trata 
+de uma avaliação própria da empresa será mais intieressante a exploração futura 
+com relação a outras variáveis para determinar seu impacto.
 
 ### ListingCategory
 
-Esta categoria é tratada de forma diferente, porém vale lembrar que apesar de estarmos lidando com uma lista enumerada segue a seguir cada um de suas respectivas categorias:
+Esta categoria é tratada de forma diferente, porém vale lembrar que apesar de 
+estarmos lidando com uma lista enumerada segue a seguir cada um de suas 
+respectivas categorias:
   
 0 - Not Available  
 1 - Debt Consolidation  
@@ -228,213 +376,307 @@ Esta categoria é tratada de forma diferente, porém vale lembrar que apesar de 
 20 - Wedding Loans  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(ld_clean, aes(ListingCategory)) +
-                geom_bar() +
-                scale_x_continuous(limits = c(0,21), breaks = seq(0,20,1))+
-                labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
+# Cria gráfico de ListingCategory com ggplot()
+gg(ld_clean$ListingCategory, 
+   ld_clean, "Categoria", 
+   "Quantidade de Empréstimos",  
+   "Quantidade de empréstimos por Categoria") + 
+  geom_bar() + 
+  scale_x_continuous(limits = c(0,21), breaks = seq(0,20,1))
 
 ```
 
-Consolidação de Crédito é o principal motivo para que as pessoas busquem empréstimos na Prosper. Dessa forma a relação das outras categorias fica nebulosa. Por isso será criado um novo gráfico ignorando a Consolidação de Crédito para que seja possível comparar a relação com as outras categorias.
+Consolidação de Crédito é o principal motivo para que as pessoas busquem 
+empréstimos na Prosper. Dessa forma a relação das outras categorias fica 
+nebulosa. Por isso será criado um novo gráfico ignorando a Consolidação de 
+Crédito para que seja possível comparar a relação com as outras categorias.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Cria gráfico de ListingCategory filtrando a categoria 1 com ggplot()
+
 ggplot(filter(ld_clean, ListingCategory != "1"), aes(ListingCategory)) +
                 geom_bar() +
                 scale_x_continuous(limits = c(0,21), breaks = seq(0,20,1))+
-                labs(x = "Categoria", y = "Quantidade de Empréstimos", title = "Quantidade de empréstimos por Categoria") 
+                labs(x = "Categoria", 
+                     y = "Quantidade de Empréstimos", 
+                     title = "Quantidade de empréstimos por Categoria") 
 ```
 
-Agora já é possível observar que o segundo motivo para o empréstimo na Prosper é encaixado na categoria "Outros" o que é razoável já que essa é uma categoria genérica que engloba diversas outras categorias não catalogadas. Em seguida é "Melhoria Domiciliar", "Negócios" e "Automóveis".
+Agora já é possível observar que o segundo motivo para o empréstimo na Prosper 
+é encaixado na categoria "Outros" o que é razoável já que essa é uma categoria 
+genérica que engloba diversas outras categorias não catalogadas. Em seguida é 
+"Melhoria Domiciliar", "Negócios" e "Automóveis".
 
 ### Occupation
 
 ```{r , fig.width=14, fig.height=12 }
+# Cria gráfico de Profissões reordenando por frequencia com ggplot()
 
-ggplot(ld_clean, aes(x = reorder(Occupation, Occupation,  function(x)+length(x)))) +
+ggplot(ld_clean, 
+       aes(x = reorder(Occupation, Occupation,  
+                       function(x)+length(x)))) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
-  labs(x = "Profissão", y = "Quantidade", title = "Quantidade de Profissões") 
+  labs(x = "Profissão", 
+       y = "Quantidade", 
+       title = "Quantidade de Profissões") 
 
 ```
 
-Dentre os resultados obtidos será feita uma filtragem com as profissões com "Others" , "Professional" e "" por serem ambíguas.
+Dentre os resultados obtidos será feita uma filtragem com as profissões com 
+"Others" , "Professional" e "" por serem ambíguas.
 
 ```{r , fig.width=14, fig.height=12 }
+# Cria gráfico de ProsperScore com ggplot()
 
-ggplot(filter(ld_clean, Occupation != "Other" & Occupation != "Professional" & Occupation != ""), aes(x = reorder(Occupation, Occupation,  function(x)+length(x)))) +
+ggplot(filter(ld_clean, Occupation != "Other" & Occupation != "Professional" & Occupation != ""), 
+       aes(x = reorder(Occupation, Occupation,  function(x)+length(x)))) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
-  labs(x = "Quantidade", y = "Profissão", title = "Quantidade de Profissões") 
+  labs(x = "Quantidade", 
+       y = "Profissão", 
+       title = "Quantidade de Profissões") 
 
 ``` 
 
-Em ordem decrescente, a maior quantidade de profissionais que pegam empréstimos da Prosper são Executivos, Programadores e Professores, respectivamente.
+Em ordem decrescente, a maior quantidade de profissionais que pegam empréstimos 
+da Prosper são Executivos, Programadores e Professores, respectivamente.
 
 ### EmploymentStatus
 
 ```{r}
+# Mostra sumário de EmplymentStatus
 summary(ld_clean$EmploymentStatus)
 
-ggplot(ld_clean, aes(EmploymentStatus)) +
-  geom_bar() +
-  theme_minimal() +
-  labs(x = "Status de Profissão", y = "Quantidade", title = "Quantidade de Status de Profissões") 
+# Cria gráfico de EmplymentStatus com ggplot()
+gg(ld_clean$EmploymentStatus, 
+   ld_clean, 
+   "Status de Profissão", 
+   "Quantidade", 
+   "Quantidade de Status de Profissões") +
+  geom_bar() 
 
 ```
 
-Pode-se verificar que a maior parte dos empréstimos foram feitos com pessoas que estavam atualmente empregadas no memomento do empréstimo. 
+Pode-se verificar que a maior parte dos empréstimos foram feitos com pessoas 
+que estavam atualmente empregadas no memomento do empréstimo. 
 
 ### CreditScoreRangeLower e CreditScoreRangeUpper
 
 ```{r}
+# Mostra sumário de CreditScoreRangeLower
 summary(ld_clean$CreditScoreRangeLower)
 
-ggplot(ld_clean, aes(CreditScoreRangeLower)) +
-  geom_bar() +
-  theme_minimal() +
-  labs(x = "Variação de Pontuação de Crédito mais Baixa", y = "Quantidade", title = "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Baixa") 
+# Cria gráfico de CreditScoreRangeLower com ggplot()
+gg(ld_clean$CreditScoreRangeLower, 
+   ld_clean, 
+   "Variação de Pontuação de Crédito mais Baixa", 
+   "Quantidade", 
+   "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Baixa") +
+  geom_bar() 
 
 ```
 
 
 
 ```{r}
+# Mostra sumário de CreditScoreRangeUpper
 summary(ld_clean$CreditScoreRangeUpper)
 
-ggplot(ld_clean, aes(CreditScoreRangeUpper)) +
-  geom_bar() +
-  theme_minimal() +
-  labs(x = "Variação de Pontuação de Crédito mais Alta", y = "Quantidade", title = "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Alta") 
+# Cria gráfico de CreditScoreRangeUpper com ggplot()
+gg(ld_clean$CreditScoreRangeUpper, ld_clean, "Variação de Pontuação de Crédito mais Alta", "Quantidade", "Quantidade de Pessoas por Variação de Pontuação de Crédito mais Alta") +
+  geom_bar() 
+
+
 ```
 
-Observando os gráficos pode-se observar que a distribuição é muito semelhante porém com um breve deslocamento a direita em relação a Variação mais alta. O que faz sentido por que os dois gráficos tratam de uma mesma variável porém com extremos diferentes. Pode-se evidenciar também que a maior concentração de pontuação mais baixa fica em torno do valor de 700 e o mais alto em torno de 719.
+Observando os gráficos pode-se observar que a distribuição é muito semelhante 
+porém com um breve deslocamento a direita em relação a Variação mais alta. O que 
+faz sentido por que os dois gráficos tratam de uma mesma variável porém 
+com extremos diferentes. Pode-se evidenciar também que a maior concentração de 
+pontuação mais baixa fica em torno do valor de 700 e o mais alto em torno de 
+719.
 
 ### CurrentDelinquencies
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
-ggplot(ld_clean, aes(CurrentDelinquencies)) +
-  geom_histogram()+
+
+# Cria gráfico de CurrentDeliquencies com ggplot()
+gg(ld_clean$CurrentDelinquencies, 
+   ld_clean, 
+   "Quantia de contas atrasadas", 
+   "Quantidade de pessoas", 
+   "Quantia atrasada por quantidade de pessoas") +
+  geom_bar() +
   scale_x_continuous(limits = c(0,19), breaks = seq(1,18,1)) +
-  scale_y_continuous(limits = c(0,11000), breaks = seq(0,11000,1000)) +
-  labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
+  scale_y_continuous(limits = c(0,11000), breaks = seq(0,11000,1000))
+
 ```
-Pode-se observar que a maior concentração de pessoas com muitas dívidas se encontra com poucas contas atrasadas. Com processo de filtragem pode-se observar melhor a variação com mais contas.
+
+Pode-se observar que a maior concentração de pessoas com muitas dívidas se 
+encontra com poucas contas atrasadas. Com processo de filtragem pode-se observar
+melhor a variação com mais contas.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 
+# Cria gráfico de CurrentDeliquencies filtrado para valores maiores que 2 com ggplot()
 ggplot(filter(ld_clean, CurrentDelinquencies > 2), aes(CurrentDelinquencies)) +
-  geom_histogram()+
+  geom_bar()+
   scale_x_continuous(limits = c(2,18), breaks = seq(3,18,1)) +
   scale_y_continuous(limits = c(0,1200), breaks = seq(0,1200,200)) +
-  labs(x = "Quantidade de contas atrasadas", y = "Quantidade de pessoas", title = "Quantidade de contas atrasadas por pessoa")
+  labs(x = "Quantidade de contas atrasadas", 
+       y = "Quantidade de pessoas", 
+       title = "Quantidade de contas atrasadas por pessoa")
 
 
 ```
-A filtragem ajuda a mostrar que a maior quantidade de pessoas possui menos contas. São poucas pessoas que estão atrasadas e possuem diversas contas.
+
+A filtragem ajuda a mostrar que a maior quantidade de pessoas possui menos 
+contas. São poucas pessoas que estão atrasadas e possuem diversas contas.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+# Mostra sumário de AmountDelinquent
 summary(ld_clean$AmountDelinquent)
 
-ggplot(ld_clean, aes(AmountDelinquent)) +
-  geom_histogram() +
-  labs(x = "Quantidade atrasada em dólar", y = "Quantidade de pessoas", title = "Quantidade de pessoas atrasadas por quantia atrasada em dólar")
+# Cria gráfico de AmountDeliquent com ggplot()
+gg(ld_clean$AmountDelinquent, ld_clean, "Quantidade atrasada (Dólar)", "Quantidade de pessoas", "Quantidade de pessoas atrasadas por quantia atrasada ") + 
+  geom_histogram()
+
 ```
-Fazendo uma breve análise pode-se analisar que a maior parte dos clientes se concentra em clientes não atrasados.
+
+Fazendo uma breve análise pode-se analisar que a maior parte dos clientes se 
+concentra em clientes não atrasados.
 
 ```{r}
 
-count_no_delinquent <- nrow(filter(ld_clean, AmountDelinquent == 0))
-count_delinquent <- nrow(filter(ld_clean, AmountDelinquent > 0))
+#count_no_delinquent <- nrow(filter(ld_clean, AmountDelinquent == 0))
+#count_delinquent <- nrow(filter(ld_clean, AmountDelinquent > 0))
 
-print(count_delinquent/(count_delinquent+count_no_delinquent))
+#print(count_delinquent / (count_delinquent+count_no_delinquent))
 ```
+
 
 Tem-se cerca de 13.1% dos clientes atrasados.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 
+# Cria gráfico de AmountDelinquent para valores maiores que 10000 com ggplot()
+
 ggplot(filter(ld_clean, AmountDelinquent > 10000), aes(AmountDelinquent)) +
   geom_histogram() +
-  labs(x = "Quantidade atrasada em dólar", y = "Quantidade de pessoas", title = "Quantidade de pessoas atrasadas por quantia atrasada em dólar")
+  labs(x = "Quantidade atrasada (Dólar)", 
+       y = "Quantidade de pessoas", 
+       title = "Quantidade de pessoas atrasadas por quantia atrasada")
 ```
 
-Fazendo uma filtragem com apenas atrasados em mais de 10000 dólares é possível ver que tratam-se de poucas pessoas. Portanto a grande concentração de pessoas se destina a dívidas menores que 10000 dólares.
+Fazendo uma filtragem com apenas atrasados em mais de 10000 dólares é possível 
+ver que tratam-se de poucas pessoas. Portanto a grande concentração de pessoas 
+se destina a dívidas menores que 10000 dólares.
 
 ### DebtToIncomeRatio
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+# Mostra sumário de DebtToIncomeRatio
 summary(ld_clean$DebtToIncomeRatio)
 
-ggplot(data = ld_clean, aes(DebtToIncomeRatio)) +
+# Cria gráfico de DebtToIncomeRatio com ggplot()
+gg(ld_clean$DebtToIncomeRatio, 
+   ld_clean, 
+   "Razão de Dívida por Renda Mensal", 
+   "Quantidade de pessoas", 
+   "Razão de Dívida por Renda Mensal por quantidade de pessoas") + 
   geom_histogram()
+
 
 ```
 
-A maior parte dos clientes possui uma proporção de dívida e renda de 0.22%. Salvo alguma exceções. No gráfico torna-se difícil de enxergar essa relação. Portanto, será utilizada uma tranformação logarítmica para facilitar a visualização deste outros casos. 
+A maior parte dos clientes possui uma proporção de dívida e renda de 0.22%. 
+Salvo alguma exceções. No gráfico torna-se difícil de enxergar essa relação. 
+Portanto, será utilizada uma tranformação logarítmica para facilitar a 
+visualização deste outros casos. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=6}
+# Mostra sumário de DebtoToIncomeRatio
 summary(ld_clean$DebtToIncomeRatio)
 
-graf_1 <- ggplot(data = ld_clean, aes(DebtToIncomeRatio)) +
+# Cria gráfico de DebtToIncomeRatio e salva em graf_1
+graf_1 <- gg(ld_clean$DebtToIncomeRatio, ld_clean, "Razão de Dívida por Renda Mensal", "Quantidade de pessoas", "Razão de Dívida por Renda Mensal por quantidade de pessoas") +  
   geom_histogram() +
-  labs(x = "Proporção de Dívida e Renda", y = "Quantidade de pessoas", title = "Proporção de Dívida e Renda por Pessoa") +
-  scale_x_continuous(limits = c(0,10.1), breaks = seq(0,10.1,0.5)) 
+  scale_x_continuous(limits = c(0,10.1), breaks = seq(0,10.1,0.5))
 
+# Cria gráfico de DebtToIncomeRatio com transformada em log10 e salva em graf_2
 graf_2 <- ggplot(data = ld_clean, aes(log10(DebtToIncomeRatio)+1)) +
   geom_histogram() +
-  labs(x = "Proporção de Dívida e Renda (log10)", y = "Quantidade de pessoas", title = "Proporção de Dívida em log10 e Renda por Pessoa")
+  labs(x = "Proporção de Dívida e Renda (log10)", 
+       y = "Quantidade de pessoas", 
+       title = "Proporção de Dívida em log10 e Renda por Pessoa")
   
+# Mostra os dois gráficos em grid
 grid.arrange(graf_1, graf_2, ncol = 2 )
 
   
 ```
 
-A situação de análise se restringe a valores próximos de 0.22%, mas não é um fator limitante. Existindo casos em que essa razão pode ser extrapolada.
+A situação de análise se restringe a valores próximos de 0.22%, mas não é um 
+fator limitante. Existindo casos em que essa razão pode ser extrapolada.
 
 ### StatedMonthlyIncome
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+# Mostra sumário de StatedMonthlyIncome
 summary(ld_clean$StatedMonthlyIncome)
 
-ggplot(data = ld_clean, aes(StatedMonthlyIncome)) +
+# Cria gráfico de StatedMonthlyIncome com ggplot()
+gg(ld_clean$StatedMonthlyIncome, 
+   ld_clean, 
+   "Renda Mensal Declarada", 
+   "Quantidade de pessoas", 
+   "Quantidade de pessoas por Renda Mensal Declarada") +  
   geom_histogram() +
-  labs(x = "Renda Mensal Declarada", y = "Quantidade de pessoas", title = "Quantidade de pessoas por Renda Mensal Declarada") +
   scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
+
 
 ```
 
-Utilizando um corte máximo de 20000 mil dólares com renda mensal declarada gera-se o gráfico acima. COm os dados fornecidos pode-se afirmar que a maior concentração de renda está em torno de 5000 mil dóalres mensais.
+Utilizando um corte máximo de 20000 mil dólares com renda mensal declarada 
+gera-se o gráfico acima. COm os dados fornecidos pode-se afirmar que a maior 
+concentração de renda está em torno de 5000 mil dóalres mensais.
 
 ### MonthlyLoanPayment
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
-
+# Mostra sumário de MonthlyLoanPayment
 summary(ld_clean$MonthlyLoanPayment)
 
+# Cria gráfico de MonthlyLoanPayment com ggplot()
 ggplot(data = ld_clean, aes(MonthlyLoanPayment)) +
   geom_histogram() +
-  labs(x = "Parcela da Dívida Mensal", y = "Quantidade de pessoas", title = "Quantidade de pessoas por Parcela da Dívida Mensal") +
+  labs(x = "Parcela da Dívida Mensal (Dólar)", 
+       y = "Quantidade de pessoas", 
+       title = "Quantidade de pessoas por Parcela da Dívida Mensal") +
   scale_x_continuous(limits = c(0,1500), breaks = seq(0,1500,100))
 
 ```
 
-A maior parte das dívidas mensais, no entanto, giram em torno de 160 e 300 dólares mensais. Que são valores aceitáveis quanto a possibilidade de pagamento.
+A maior parte das dívidas mensais, no entanto, giram em torno de 160 e 300 
+dólares mensais. Que são valores aceitáveis quanto a possibilidade de pagamento.
 
 ## Análise Bavariada
 
 ### Encontrando Correlações
 
-Para analisar as correlações para a análise bivariada serão feitos alguns testes antes de decidir quais relações serão aprofundadas a seguir.
+Para analisar as correlações para a análise bivariada serão feitos alguns testes 
+antes de decidir quais relações serão aprofundadas a seguir.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-cor.test(ld_clean$BorrowerRate, ld_clean$EstimatedReturn)
-cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeLower)
-cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeUpper)
+#cor.test(ld_clean$BorrowerRate, ld_clean$EstimatedReturn)
+#cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeLower)
+#cor.test(ld_clean$ProsperScore, ld_clean$CreditScoreRangeUpper)
 ```
 
 Correlações:
@@ -443,135 +685,316 @@ Correlações:
 - ProsperScore e CreditScoreRangeLower: 0.3870006
 - ProsperScore e CreditScoreRangeUpper: 0.3870006
 
-Muitas das outras comparações apontaram valores de pontuação de correlação muito baixas e foram descartadas e outras utilizam tipos qualitativos e não quantitativos.
+Muitas das outras comparações apontaram valores de pontuação de correlação muito 
+baixas e foram descartadas e outras utilizam tipos qualitativos e não 
+quantitativos.
 
-Portanto algumas das análises serão feitas de forma arbitrária para analisar a relação de cada variável.
+Portanto algumas das análises serão feitas de forma arbitrária para analisar a 
+relação de cada variável.
 
 ### BorrowerRate e EstimatedReturn
 
 ```{r}
-
-ggplot(data = ld_clean, aes(EstimatedReturn, BorrowerRate)) +
-  geom_jitter(alpha = 0.2, size = 1, position = 'jitter') +
-  labs(x = "Retorno Estimado", y = "Taxa de Empréstimo", title = "Retorno Estimado por Taxa de Empréstimo")
-
+# Cria gráfico com 2 variáveis de EstimatedReturn e BorrowerRate com ggplot()
+gg_bi(ld_clean$EstimatedReturn, 
+      ld_clean$BorrowerRate, 
+      ld_clean, 
+      "Retorno Estimado", 
+      "Taxa de Empréstimo", 
+      "Retorno Estimado por Taxa de Empréstimo" ) + 
+  geom_jitter(alpha = 0.2, 
+              size = 1, 
+              position = 'jitter') 
 ```
 
-Há dois grandes padrões observados com estes dados. O primeiro deles é que as Taxas de Empréstimo e O Retorno estimado seguem camadas lineares e paralelas de forma bastante sutil. Enquanto ao mesmo tempo há uma concentração bastante grande de valores acumulados e com certa divergência de valores de Retorno Estimado entre 0.3 e 0.11 .
+Há dois grandes padrões observados com estes dados. O primeiro deles é que as 
+Taxas de Empréstimo e O Retorno estimado seguem camadas lineares e paralelas de 
+forma bastante sutil. Enquanto ao mesmo tempo há uma concentração bastante 
+grande de valores acumulados e com certa divergência de valores de Retorno 
+Estimado entre 0.3 e 0.11 .
 
 
 ### ListingCategory e Occupation
  
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12}
+# Cria gráfico com 2 variáveis de ListingCateogry e Occupation com ggplot()
 
-ggplot(data = ld_clean, aes(ListingCategory, Occupation)) +
-  geom_point(alpha = 0.1, size = 1, position = 'jitter')+
-  labs(x = "Categoria de Empréstimo", y = "Profissão", title = "Categoria de Empréstimo por Profissão")  +
+gg_bi(ld_clean$ListingCategory, 
+      ld_clean$Occupation, 
+      ld_clean, 
+      "Categoria de Empréstimo", 
+      "Profissão", 
+      "Categoria de Empréstimo por Profissão") + 
+  geom_point(alpha = 0.1, 
+             size = 1, 
+             position = 'jitter') +
   scale_x_continuous(limits = c(0,20), breaks = seq(0,20,1))
+
 ```
-O que mais se destaca por esta análise é que o fator mais relevante para empréstimo é a categoria delas, que seguem o mesmo padrão para as mais diversas profissões em maior ou menos intensidade. Vale destacar que as profissões "Professional" e "Others" por serem mais genéricas e possuirem diversos dados com esta definiçãpo, apresenta uma forte marcação. Outra observação é a de que Estudantes de uma forma geral não possuem muitos empréstimos. Muito provavelmente por motivos financeiros, já que ao estudar torna-se menos propenso a dividir o tempo de dedicação com algum a atividade remunerada que garanta o cobrimento das parelas de um empréstimo. Por outro lado, Juízes, Investidores também são menos propensos a terem empréstimos. Por sua vez, acredito que pela natureza de se tratar de empregos que recebem alta remuneração há a menor busca de empréstimos.
+
+O que mais se destaca por esta análise é que o fator mais relevante para 
+empréstimo é a categoria delas, que seguem o mesmo padrão para as mais diversas 
+profissões em maior ou menos intensidade. Vale destacar que as profissões 
+"Professional" e "Others" por serem mais genéricas e possuirem diversos dados 
+com esta definiçãpo, apresenta uma forte marcação. Outra observação é a de que 
+Estudantes de uma forma geral não possuem muitos empréstimos. Muito 
+provavelmente por motivos financeiros, já que ao estudar torna-se menos propenso 
+a dividir o tempo de dedicação com algum a atividade remunerada que garanta o 
+cobrimento das parelas de um empréstimo. Por outro lado, Juízes, Investidores 
+também são menos propensos a terem empréstimos. Por sua vez, acredito que pela 
+natureza de se tratar de empregos que recebem alta remuneração há a menor busca 
+de empréstimos.
 
 ### Term e DebtToIncomeRatio
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
-ggplot(ld_clean, aes(DebtToIncomeRatio, Term)) +
+# Cria gráfico com 2 variáveis de DebtTOIncomeRatio e Term com ggplot()
+
+gg_bi(ld_clean$DebtToIncomeRatio, 
+      ld_clean$Term, 
+      ld_clean, 
+      "Taxa de Dívida por Renda", 
+      "Tempo de Empréstimo", 
+      "Taxa de Dívida por Renda por Tempo de Emrpéstimo") + 
   geom_point() +
-  labs(x = "Taxa de Dívida por Renda", y = "Tempo de Empréstimo", title = "Taxa de Dívida por Renda por Tempo de Emrpéstimo") +
   scale_y_continuous(limits = c(0,60), breaks = seq(0,60,6))
 ```
 
-Nos 3 cenários observam-se características. A primeira é que a maior parte dos mutuários com tempo de empréstimo de 12 meses também possuem uma taxa menor de Dívida por Renda, o que significa que há uma relação de capacidade financeiro de prover o pagamento da dívida. A segunda é a variação gradual de Taxa de Dívida por Renda. Sendo este o caso mais com maior ocorrências e por último, o terceiro cenário em que há 60 meses de tempo de empréstimo, mas que aprensenta também uma taxa de Dívida por Renda maior. 
+Nos 3 cenários observam-se características. A primeira é que a maior parte dos 
+mutuários com tempo de empréstimo de 12 meses também possuem uma taxa menor de 
+Dívida por Renda, o que significa que há uma relação de capacidade financeiro de 
+prover o pagamento da dívida. A segunda é a variação gradual de Taxa de Dívida 
+por Renda. Sendo este o caso mais com maior ocorrências e por último, o terceiro 
+cenário em que há 60 meses de tempo de empréstimo, mas que aprensenta também uma 
+taxa de Dívida por Renda maior. 
 
 ### StatedMonthlyIncome e ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+# Cria gráfico com 2 variáveis de StatedMonthlyIncome e ProsperScore com ggplot()
 
-ggplot(data = ld_clean, aes(StatedMonthlyIncome, ProsperScore)) +
-  geom_point(alpha = 0.05, size = 1, position = 'jitter')+
-  labs(x = "Renda Mensal Declarada", y = "Pontuação da Prosper", title = "Renda Mensal Declara pela Pontuação da Prosper") +
+gg_bi(ld_clean$StatedMonthlyIncome, 
+      ld_clean$ProsperScore, 
+      ld_clean, 
+      "Renda Mensal Declarada", 
+      "Pontuação da Prosper", 
+      "Renda Mensal Declara pela Pontuação da Prosper") +
+  geom_point(alpha = 0.05, 
+             size = 1, 
+             position = 'jitter') +
   scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000)) +
   scale_y_continuous(limits = c(1,10), breaks = seq(0,10,1))
 ```
 
-Pode-se observar que há uma leve inclinação para que uma quantidade maior de Renda Mensal Declarada ajude a ter uma pontuação maior na Prosper, mas ainda devem ser feitos análises mais extensivas para que possam se afirmar quaisquer conclusões sobre o real impacto desta variável.
+Pode-se observar que há uma leve inclinação para que uma quantidade maior de 
+Renda Mensal Declarada ajude a ter uma pontuação maior na Prosper, mas ainda 
+devem ser feitos análises mais extensivas para que possam se afirmar quaisquer 
+conclusões sobre o real impacto desta variável.
 
 ### ProsperScore e CreditScoreRangeLower
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
-ggplot(data = ld_clean, aes(CreditScoreRangeLower, ProsperScore)) +
-  geom_point(alpha = 0.05, size = 1, position = 'jitter')+
-  labs(x = "CreditScoreRangeLower", y = "Pontuação da Prosper", title = "CreditScoreRangeLower por Pontuação da Prosper") +
+# Cria gráfico com 2 variáveis de CreditScoreRangeLower e ProsperScore com ggplot()
+
+gg_bi(ld_clean$CreditScoreRangeLower, 
+      ld_clean$ProsperScore, 
+      ld_clean, 
+      "CreditScoreRangeLower", 
+      "Pontuação da Prosper", 
+      "CreditScoreRangeLower por Pontuação da Prosper") +
+  geom_point(alpha = 0.05, 
+             size = 1, 
+             position = 'jitter') +
   scale_y_continuous(limits = c(1,10), breaks = seq(0,10,1))
+
 ```
 
-Esta análise também mostra uma leve relação entre a CreditScoreRangeLower e a ProsperScore com uma leve tendência de cresciemnto.
+Esta análise também mostra uma leve relação entre a CreditScoreRangeLower e a 
+ProsperScore com uma leve tendência de cresciemnto.
 
 ### ProsperScore e CreditScoreRangeUpper
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
-ggplot(data = ld_clean, aes(CreditScoreRangeUpper, ProsperScore)) +
-  geom_point(alpha = 0.05, size = 1, position = 'jitter')+
-  labs(x = "CreditScoreRangeUpper", y = "Pontuação da Prosper", title = "CreditScoreRangeLower por Pontuação da Prosper") +
+# Cria gráfico com 2 variáveis de CreditScoreRangeUpper e ProsperScore com ggplot()
+
+gg_bi(ld_clean$CreditScoreRangeUpper, 
+      ld_clean$ProsperScore, 
+      ld_clean, 
+      "CreditScoreRangeUpper", 
+      "Pontuação da Prosper", 
+      "CreditScoreRangeUpper por Pontuação da Prosper") +
+  geom_point(alpha = 0.05, 
+             size = 1, 
+             position = 'jitter') +
   scale_y_continuous(limits = c(1,10), breaks = seq(0,10,1))
+
 ```
 
-De forma análoga, a mesma relação pode ser observada quando se tratam das variáveis ProsperScore e CreditScoreRangeUpper.
+De forma análoga, a mesma relação pode ser observada quando se tratam das 
+variáveis ProsperScore e CreditScoreRangeUpper.
 
 ### Profissões e Pontuação Prosper
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=36}
-ggplot(ld_clean, aes(x = reorder(Occupation, ProsperScore,  function(x)+length(x)), y = ProsperScore)) +
+# Cria gráfico com 2 variáveis de Occupation reordenado e ProsperScore com ggplot()
+
+ggplot(ld_clean, 
+       aes(x = reorder(Occupation, 
+                       ProsperScore,  
+                       function(x)+length(x)), 
+           y = ProsperScore)) +
   geom_boxplot() +
   coord_flip() +
   theme_minimal() +
   scale_y_continuous(limits = c(1,10), breaks = seq(0,10,1)) +
-  labs(x = "Profissão", y = "ProsperScore", title = "ProsperScore por Profissão") 
+  labs(x = "Profissão", 
+       y = "ProsperScore", 
+       title = "ProsperScore por Profissão") 
 ```
 
-Uma breve análise consegue destacar algumas carreiras que conseguem obter pontuações maiores na Prosper dentre elas destacam-se Programador, Engenheiro Eletricista, Advogado, Doutor, Farmacêutico, Arquiteto, Investidor e Juíz. Em geral tratam-se de profissões bem remuneradas, o que pode ser um fator determinante para esta análise.
+Uma breve análise consegue destacar algumas carreiras que conseguem obter 
+pontuações maiores na Prosper dentre elas destacam-se Programador, Engenheiro 
+Eletricista, Advogado, Doutor, Farmacêutico, Arquiteto, Investidor e Juíz. 
+Em geral tratam-se de profissões bem remuneradas, o que pode ser um fator 
+determinante para esta análise.
 
 
 ## Análise Multivariada
 
 ### Estimated Return, BorrowerRate e ProsperScore
 ```{r}
-ggplot(ld_clean, aes(x = EstimatedReturn ,  y = BorrowerRate, color = ProsperScore)) +
+# Cria gráfico com 3 variáveis de EstiamtedReturn, BorrowerRate, ProsperScore
+# reordenado e ProsperScore com ggplot()
+
+ggplot(ld_clean, aes(x = EstimatedReturn ,  
+                     y = BorrowerRate, 
+                     color = ProsperScore)) +
   geom_point() +
-  labs(x = "Estimativa de Retorno", y = "Taxa de Empréstimo", title = "Taxa de Empréstimo por Estimativa de Retorno por Prosper Score", color = "Prosper Score") 
+  labs(x = "Estimativa de Retorno", 
+       y = "Taxa de Empréstimo", 
+       title = "Taxa de Empréstimo por Estimativa de Retorno por Prosper Score", 
+       color = "Prosper Score") 
   
 ```
 
-Comparando agora a análise bivariada de Borrower Rate e Estimated Return com o ProsperScore é possível enxergar uma gradação bastante interessante para as relações de Borrower Rate e Estimated Return. Pode-se concluir que um dos fatores mais relevantes para a diferenciação é a nota da ProsperScore que concentra maiores pontuações quanto maior a Estimativa de Retorno, o que também viabiliza uma Taxa de Empréstimo Menor.
+Comparando agora a análise bivariada de Borrower Rate e Estimated Return com o 
+ProsperScore é possível enxergar uma gradação bastante interessante para as 
+relações de Borrower Rate e Estimated Return. Pode-se concluir que um dos 
+fatores mais relevantes para a diferenciação é a nota da ProsperScore que 
+concentra maiores pontuações quanto maior a Estimativa de Retorno, o que também 
+viabiliza uma Taxa de Empréstimo Menor.
+
+### DebtToIncomeRatio, BorrowerRate, ProsperScore
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Cria gráfico com 3 variáveis de ld_clean, DebtToIncomeRatio, BorrowerRate
+# reordenado e ProsperScore com ggplot()
+
+ggplot(ld_clean, aes(x = DebtToIncomeRatio, 
+                     y = BorrowerRate, 
+                     color = ProsperScore))+
+  geom_point(alpha = 0.2) +
+  geom_smooth(color = "#FF6666") +
+  scale_y_continuous(limits = c(0.04,0.36), breaks = seq(0.04,0.36,0.02)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.20)) +
+  labs(x = "Razão de Dívida por Renda Mensal", 
+       y = "Taxa de Empréstimo", 
+       title = "Relação da Razão da Dívida por Renda Mensal 
+       por Taxa de Empréstimo para a Prosper Score") +
+  theme_light()
+```  
+
+Este gráfico apresenta uma relação entra a Razão da Dívida por Renda Mensal e a 
+Taxa de Empréstimo com o gradiente de cor repsrentando a ProsperScore. 
+Essa relação mostra que quanto menor a Taxa de Empréstimo e da Razão da Dívida 
+por Renda Mensal maior a ProsperScore.
 
 
 ### StatedMonthlyIncome, EstimatedReturn e ProsperScore
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=18, fig.height=16}
+# Cria gráfico com 3 variáveis de ld_clean, StatedMoonthlyIncome, ProsperScore
+# reordenado e ProsperScore com ggplot()
 
-ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = ProsperScore)) +
-  geom_point(alpha = 0.5, size = 1, position = 'jitter')+
-  labs(x = "Renda Mensal Declarada", y = "Estimativa de Retorno", title = "Rendal Mensal Declarada por Estimativa de Retorno por ProsperScore")  +
-  scale_color_gradient(low = "blue", high = "red") +
+ggplot(data = ld_clean, 
+       aes(x = StatedMonthlyIncome, 
+           EstimatedReturn, 
+           color = ProsperScore)) +
+  geom_point(alpha = 0.5, 
+             size = 1, 
+             position = 'jitter')+
+  labs(x = "Renda Mensal Declarada", 
+       y = "Estimativa de Retorno", 
+       title = "Rendal Mensal Declarada por 
+       Estimativa de Retorno por ProsperScore")  +
+  scale_color_gradient(low = "blue", 
+                       high = "red") +
   scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
 ```
 
-Nesta análise pode-se chegar a conclusão que valores de taxa de retorno negativas impactam na ProsperScore significativamente. Não significa que quanto maior a taxa de retorno maior a pontuação da ProsperScore, como pode-se evidenciar pela nuvem mesclada de dados entre taxas superiores a 0 e inferiores a 0.2. Porém, para taxas acima de 0.2 a ProsperScore sempre apresenta boas pontuações. 
-Agora sobre a Renda Mensal Declarada não parece ter tantra influência na ProsperScore. 
+Nesta análise pode-se chegar a conclusão que valores de taxa de retorno 
+negativas impactam na ProsperScore significativamente. Não significa que quanto 
+maior a taxa de retorno maior a pontuação da ProsperScore, como pode-se 
+evidenciar pela nuvem mesclada de dados entre taxas superiores a 0 e inferiores 
+a 0.2. Porém, para taxas acima de 0.2 a ProsperScore sempre apresenta boas 
+pontuações. 
+Agora sobre a Renda Mensal Declarada não parece ter tantra influência na 
+ProsperScore. 
 
 ### ListingCategory, DebtToIncomeRatio, ProsperScore
 
 ```{r  echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(data = ld_clean, aes(x = ListingCategory, DebtToIncomeRatio, color = ProsperScore)) +
-  geom_point(alpha = 0.5, size = 1, position = 'jitter')+
-  labs(x = "Categorias", y = "Razão de Dívida e Renda Mensal", title = "Categorias por Razão de Dívida e Renda Mensal Por ProsperScore")  +
+# Cria gráfico com 3 variáveis de ld_clean, ListingCategory, DebtToIncomeRatio
+# reordenado e ProsperScore com ggplot()
+
+ggplot(data = ld_clean, aes(x = ListingCategory, 
+                            y = DebtToIncomeRatio, 
+                            color = ProsperScore)) +
+  geom_point(alpha = 0.5, 
+             size = 1, 
+             position = 'jitter')+
+  labs(x = "Categorias", 
+       y = "Razão de Dívida e Renda Mensal", 
+       title = "Categorias por Razão de 
+       Dívida e Renda Mensal Por ProsperScore")+
   scale_x_continuous(limits = c(0,20), breaks = seq(0,20,1)) 
 
 
 ```
 
-Esta análise não consegue atingir nenhuma conclusão por apresentar uma distribuição bastante bagunçada da ProsperScore.
+Esta análise não consegue atingir nenhuma conclusão por apresentar uma 
+distribuição bastante bagunçada da ProsperScore.
+
+### DebtToIncomeRatio, Occupation, ProsperScore
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12}
+# Define o meio do padrão de gradiente de cor
+mid <- mean(iris$Sepal.Length)
+
+# Cria gráfico com 3 variáveis de ld_clean, DebtToIncomeRatio, 
+# Occupation ordenado e ProsperScore com ggplot()
+ggplot(data = ld_clean, aes(x = DebtToIncomeRatio, 
+                            y = reorder(Occupation, desc(Occupation)), 
+                            color = ProsperScore)) +
+  geom_point(alpha = 0.25, size = 1, position = 'jitter') +
+  labs(x = "Razão entre Dívida e Renda Mensal", 
+       y = "Profissão", 
+       title = "Razão entre Dívida e Renda Mensal 
+       por Profissão por PorsperScore") +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  scale_color_gradient2(midpoint = mid, 
+                        low = "blue", 
+                        mid = "white",
+                        high = "red", 
+                        space = "Lab" )
+```
+
+Uma breve análise indica que a Razão da Dívida e Renda Mensal é muito mais 
+influente na ProsperScore, já que dentre as mais diferentes profissões não há 
+tanta variação quanta a variação de pontuações.
+
 
 ## Gráficos Finais e Resumo
 
@@ -580,58 +1003,132 @@ Esta análise não consegue atingir nenhuma conclusão por apresentar uma distri
 ### Relação da Razão da Dívida por Renda Mensal por Taxa de Empréstimo para a Prosper Score
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(ld_clean, aes(x = DebtToIncomeRatio, y = BorrowerRate, color = ProsperScore))+
+# Cria gráfico com 3 variáveis de ld_clean, DebtToIncomeRatio, BorrowerRate
+# reordenado e ProsperScore com ggplot()
+
+ggplot(ld_clean, aes(x = DebtToIncomeRatio, 
+                     y = BorrowerRate, 
+                     color = ProsperScore))+
   geom_point(alpha = 0.2) +
   geom_smooth(color = "#FF6666") +
   scale_y_continuous(limits = c(0.04,0.36), breaks = seq(0.04,0.36,0.02)) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.20)) +
   labs(x = "Razão de Dívida por Renda Mensal", 
        y = "Taxa de Empréstimo", 
-       title = "Relação da Razão da Dívida por Renda Mensal por Taxa de Empréstimo para a Prosper Score") +
+       title = "Relação da Razão da Dívida por Renda Mensal 
+       por Taxa de Empréstimo para a Prosper Score") +
   theme_light()
   
 ```
 
-Este gráfico envolve a relação entre a Razão da Dívida por Renda Mensal, que ao longo de toda esta análise foi considerada uma variável bastante importante para determinar a possibilidade de cada mutuário ser capaz de quitar seu empréstimo, com a Taxa de Empréstimo, que é a taxa determinada para quem está emprestando este dinheiro ao mutuário. Essa relação consegue criar um gradiente com a pontuação da Prosper para cada mutuário. 
+Este gráfico envolve a relação entre a Razão da Dívida por Renda Mensal, que ao 
+longo de toda esta análise foi considerada uma variável bastante importante para 
+determinar a possibilidade de cada mutuário ser capaz de quitar seu empréstimo, 
+com a Taxa de Empréstimo, que é a taxa determinada para quem está emprestando 
+este dinheiro ao mutuário. Essa relação consegue criar um gradiente com a 
+pontuação da Prosper para cada mutuário. 
 
-A princípio é possível enxergar que há uma maior concentração de pontuação mais alta ao reduzir a Taxa de Empréstimo. Porém, não se torna distinto tão facilmente se a Razão de Dívida por Renda Mensal também influencia tanto a Pontuação da Prosper. Por isso, torna-se necessário o uso da reta para enxergar a tendência desses dados. 
+A princípio é possível enxergar que há uma maior concentração de pontuação mais 
+alta ao reduzir a Taxa de Empréstimo. Porém, não se torna distinto tão 
+facilmente se a Razão de Dívida por Renda Mensal também influencia tanto a 
+Pontuação da Prosper. Por isso, torna-se necessário o uso da reta para enxergar 
+a tendência desses dados. 
 
-A conclusão é que maior será a Pontuação da Prosper quanto menor for a a razão da dívida por renda mensal do mutuário e quanto menor a taxa de empréstimo.
+A conclusão é que maior será a Pontuação da Prosper quanto menor for a a razão 
+da dívida por renda mensal do mutuário e quanto menor a taxa de empréstimo.
 
 ### Renda Mensal Declarada,  Estimativa de Retorno, ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=18, fig.height=16}
+# Cria gráfico com 3 variáveis de ld_clean, StatedMoonthlyIncome, 
+# EstimatedReturn, reordenado e ProsperScore com ggplot()
 
-ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, EstimatedReturn, color = ProsperScore)) +
-  geom_point(alpha = 0.5, size = 1, position = 'jitter') +
-  labs(x = "Renda Mensal Declarada", y = "Estimativa de Retorno", title = "Rendal Mensal Declarada por Estimativa de Retorno por ProsperScore")  +
-  scale_color_gradient(low = "blue", high = "red") +
+ggplot(data = ld_clean, aes(x = StatedMonthlyIncome, 
+                            y = EstimatedReturn, 
+                            color = ProsperScore)) +
+  geom_point(alpha = 0.5, 
+             size = 1, 
+             position = 'jitter') +
+  labs(x = "Renda Mensal Declarada", 
+       y = "Estimativa de Retorno", 
+       title = "Rendal Mensal Declarada por 
+       Estimativa de Retorno por ProsperScore")  +
+  scale_color_gradient(low = "blue", 
+                       high = "red") +
   scale_x_continuous(limits = c(0,20000), breaks = seq(0,20000,2000))
 
 ```
 
-A análise de Renda Mensal Declarada e Estimativa de Retorno, apresetaram resultados bastante interessantes para a análise do Score da Prosper. Inicialmente podemos afirmar que não há influência da relação das duas variáveis em relação à pontuação da Prosper. Porém, olhando cuidadosamente, é possível enxergar que existem valores limitantes para a estimativa de retorno que criam faixas que podem criar separações entre 3 áreas distintitas. A primeira faixa delimita uma taxa de retorno acima ao valor de 0.18 que predominantemente possui apenas mutuários com pontuações mais altas na ProsperScore. A faixa inferior de -0.02 para baixo apresenta predominantemente mutuários com baixas pontuações na ProsperScore. Enquanto a camada central se encontra uma faixa com valores distintos e bastante misturados entre si. Sem poder afirmar uma relação com a renda mensal declarada. Muito provavelmente por ser muito mais provável de se determinar uma relação bruta da pontuação da Prosper quando comapra ao gráfico da análise anterior, já que estaria lidando com a variável em função da Razão entre a Dívida e a Renda mensal do mutuário.
-Portanto, maior renda não significa nada para a Pontução da Prosper, mas sim a relação dessa renda com a dívida em si.
+A análise de Renda Mensal Declarada e Estimativa de Retorno, apresetaram 
+resultados bastante interessantes para a análise do Score da Prosper. 
+Inicialmente podemos afirmar que não há influência da relação das duas 
+variáveis em relação à pontuação da Prosper. Porém, olhando cuidadosamente, é 
+possível enxergar que existem valores limitantes para a estimativa de retorno 
+que criam faixas que podem criar separações entre 3 áreas distintitas. A 
+primeira faixa delimita uma taxa de retorno acima ao valor de 0.18 que 
+predominantemente possui apenas mutuários com pontuações mais altas na 
+ProsperScore. A faixa inferior de -0.02 para baixo apresenta predominantemente 
+mutuários com baixas pontuações na ProsperScore. Enquanto a camada central se 
+encontra uma faixa com valores distintos e bastante misturados entre si. Sem 
+poder afirmar uma relação com a renda mensal declarada. Muito provavelmente por 
+ser muito mais provável de se determinar uma relação bruta da pontuação da 
+Prosper quando comapra ao gráfico da análise anterior, já que estaria lidando 
+com a variável em função da Razão entre a Dívida e a Renda mensal do mutuário.
+Portanto, maior renda não significa nada para a Pontução da Prosper, mas sim a 
+relação dessa renda com a dívida em si.
 
 ### DebtToIncomeRatio, Occupation, ProsperScore
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12}
-ggplot(data = ld_clean, aes(x = DebtToIncomeRatio, y = reorder(Occupation, desc(Occupation)), color = ProsperScore)) +
+# Cria gráfico com 3 variáveis de ld_clean, DebtToIncomeRatio, 
+# Occupation ordenado e ProsperScore com ggplot()
+ggplot(data = ld_clean, aes(x = DebtToIncomeRatio, 
+                            y = reorder(Occupation, desc(Occupation)), 
+                            color = ProsperScore)) +
   geom_point(alpha = 0.25, size = 1, position = 'jitter') +
-  labs(x = "Razão entre Dívida e Renda Mensal", y = "Profissão", title = "Razão entre Dívida e Renda Mensal por Profissão por PorsperScore") +
+  labs(x = "Razão entre Dívida e Renda Mensal", 
+       y = "Profissão", 
+       title = "Razão entre Dívida e Renda Mensal 
+       por Profissão por PorsperScore") +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
-  scale_color_gradientn(colours = rainbow(5))
+  scale_color_gradient2(midpoint = mid, 
+                        low = "blue", 
+                        mid = "white",
+                        high = "red", 
+                        space = "Lab" )
 ```
-A análise de Profissões por Renda Mensal Declarada vai possuir uma certa distribuição que acompanhará cada Profissão. Aglomerando essas informações com a pontuação da Prosper pode-se observar que maiores pontuações da Prosper estão distribuídas entre todas as profissões porém, algumas concentram uma quantidade maior. Era de se esperar que a Razão da Dívida e Renda Mensal fossem fatores fortes para essa pontuação, porém, pode-se enxergar que em algumas profissões existem mutuários com essa razão próxima de 0.2 que também aprensentam pontuações altas na Prosper. 
+
+A análise de Profissões por Renda Mensal Declarada vai possuir uma certa 
+distribuição que acompanhará cada Profissão. Aglomerando essas informações com 
+a pontuação da Prosper pode-se observar que maiores pontuações da Prosper estão 
+distribuídas entre todas as profissões porém, algumas concentram uma quantidade 
+maior. Era de se esperar que a Razão da Dívida e Renda Mensal fossem fatores 
+fortes para essa pontuação, porém, pode-se enxergar que em algumas profissões 
+existem mutuários com essa razão próxima de 0.2 que também aprensentam 
+pontuações altas na Prosper. 
 
 
 ## Reflexão
 
-Este projeto foi bastante interessante e tangencialmente incentiva o estudante a compreender os dados que estão sendo trabalhados. Por este mesmo motivo, a primeira dificuldade encontrada foi entender cada variável de maneira correta, já que eu não possuo background em como empréstimos funcionam, isso aliado aos termos todos em inglês agregou muito conhecimento buscando entender como tudo funcionava. Uma grande ajuda foi a [planilha explicativa ](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit#gid=0) descrevendo cada variável e suas peculiaridades.
+Este projeto foi bastante interessante e tangencialmente incentiva o estudante 
+a compreender os dados que estão sendo trabalhados. Por este mesmo motivo, a 
+primeira dificuldade encontrada foi entender cada variável de maneira correta, 
+já que eu não possuo background em como empréstimos funcionam, isso aliado aos 
+termos todos em inglês agregou muito conhecimento buscando entender como tudo 
+funcionava. Uma grande ajuda foi a [planilha explicativa ](https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit#gid=0) 
+descrevendo cada variável e suas peculiaridades.
 
-Em seguida foi um grande exercício lidar com este número de variáveis com tantos tipos diferentes e buscar compreender a melhor forma de lidar com as variáveis escolhidas. 
+Em seguida foi um grande exercício lidar com este número de variáveis com 
+tantos tipos diferentes e buscar compreender a melhor forma de lidar com as 
+variáveis escolhidas. 
 
-Agora que o processo de análise chegou ao fim sobra um pouco de curiosidade de outras conclusões que poderiam ser obtidas lidando com mais variáveis. Das 81 variáveis presentes no conjunto de dados foram utilizadas apenas 16 delas. Dessa forma sobram muitas possibilidades de análises que poderiam ser feitas.
+Agora que o processo de análise chegou ao fim sobra um pouco de curiosidade de 
+outras conclusões que poderiam ser obtidas lidando com mais variáveis. Das 81 
+variáveis presentes no conjunto de dados foram utilizadas apenas 16 delas. Dessa 
+forma sobram muitas possibilidades de análises que poderiam ser feitas.
 
+#TODO
+## O projeto inclui uma seção de referência que discute a análise realizada.
+## A seção fornece pelo menos uma ideia ou pergunta para trabalhos futuros.
 
 
